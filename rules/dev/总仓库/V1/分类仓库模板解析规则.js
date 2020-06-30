@@ -15,7 +15,7 @@ var {
     getVar,
     putVar,
     writeFile
-} = require("../../../utils/api_haikuoshijie");
+} = require("../../../../utils/api_haikuoshijie");
 
 
 // js:
@@ -52,8 +52,11 @@ var remoteIgnoreListUrl = "https://gitee.com/Reborn_0/HikerRulesDepot/raw/master
 
 // 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
 
-// 总仓库更新地址
-var remoteDepotRuleUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/depotRule.json";
+// 为所有分类添加该分类仓库更新功能
+// 需要像总仓库一样单独用一个json管理，自行填入地址
+var remoteDepotRuleUrl = "";
+// 若不需要更新则关闭
+var showUpdateErrorTips = false;
 // 仓库状态缓存文件地址
 var statusCacheFile = "hiker://files/" + mRule.title + "_" + mRule.author + ".json";
 // 举例 hiker://files/depotStatus.json
@@ -114,7 +117,6 @@ if (apiType == "0") {
     // setError(remoteUrl);
     // var remoteHome = "https://gitee.com/" + owner + "/" + repo + "/blob/master/update.json";
 }
-
 
 // 把总仓库状态写入文件
 function writeDepotStatusToFile(depotStatus) {
@@ -218,7 +220,6 @@ var desc = function (rules, rule) {
     }
 };
 
-// 为所有分类添加总仓库项
 try {
     var remoteDepotRule = {};
     eval("remoteDepotRule=" + fetch(remoteDepotRuleUrl, {}));
@@ -237,11 +238,12 @@ try {
         });
     }
 } catch (e) {
-    d.push({
-        title: "‘‘总仓库更新程序已损坏’’",
-        desc: "请联系 " + mRule.author + " 修复",
-        col_type: "text_center_1",
-    });
+    if (showUpdateErrorTips == true)
+        d.push({
+            title: "‘‘总仓库更新程序已损坏’’",
+            desc: "请联系 " + mRule.author + " 修复",
+            col_type: "text_center_1",
+        });
 }
 
 var remoteRules = [];
@@ -269,6 +271,7 @@ try {
                     title: notice.title != null && notice.title != "" ? notice.title : "仓库通知",
                     desc: notice.desc,
                     pic_url: notice.picUrl,
+// != null && notice.picUrl != "" ? notice.picUrl : "",
                     col_type: "pic_1"
                 });
             }

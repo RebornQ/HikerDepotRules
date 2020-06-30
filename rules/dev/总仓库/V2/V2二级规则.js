@@ -15,7 +15,7 @@ var {
     getVar,
     putVar,
     writeFile
-} = require("../../../utils/api_haikuoshijie");
+} = require("../../../../utils/api_haikuoshijie");
 
 
 // js:
