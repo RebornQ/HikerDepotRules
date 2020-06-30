@@ -408,9 +408,9 @@ if (getUrl().indexOf("rule://") != -1) {
                 var isThisVersionList = [];
 
                 while (left.length > 0 && right.length > 0) {
-                    if (left[0].isIgnoreUpdate == true) {
+                    if (left[0].isIgnoreUpdate == true && left[0].oldVersion != left[0].version) {
                         ignoreUpdateList.push(left.shift());
-                    } else if (right[0].isIgnoreUpdate == true) {
+                    } else if (right[0].isIgnoreUpdate == true && right[0].oldVersion != right[0].version) {
                         ignoreUpdateList.push(right.shift());
                     } else if (left[0].oldVersion < left[0].version) {
                         result.push(left.shift());
@@ -426,7 +426,6 @@ if (getUrl().indexOf("rule://") != -1) {
                     }
                 }
 
-                // TODO 对没有需要更新却又忽略更新的规则，不排序
                 while (ignoreUpdateList.length) result.push(ignoreUpdateList.shift());
 
                 while (isThisVersionList.length) result.push(isThisVersionList.shift());
