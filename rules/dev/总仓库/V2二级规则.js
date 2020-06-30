@@ -66,7 +66,7 @@ var ignoreUpdateRuleList = [
 // {title: "预告片•Re", author: "Reborn"},
 ];
 // 云端忽略更新列表，格式是JSON数组，请自己设置
-var remoteIgnoreListUrl = "https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json";
+var remoteIgnoreListUrl = "";
 
 // 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
 
@@ -239,6 +239,10 @@ if (getUrl().indexOf("rule://") != -1) {
         return false;
     }
 
+    function setIgnoreUpdateRule(rule) {
+        if (isIgnoreUpdateRule(rule) == true) rule.isIgnoreUpdate = true;
+    }
+
     var rules = [];
     eval("rules=" + fetch("hiker://home", {}));
     var myRules = [];
@@ -301,7 +305,7 @@ if (getUrl().indexOf("rule://") != -1) {
             eval("remoteSource=" + remoteSource);
             if (apiType == "0") {
                 remoteRules = remoteSource;
-            } else if (apiType == "1") {
+            } else if (apiType == "1"){
                 eval("remoteRules=" + base64Decode(remoteSource.content));
             }
             if (remoteRules.data != null) {
@@ -359,6 +363,7 @@ if (getUrl().indexOf("rule://") != -1) {
                             j--;
                             continue;
                         }
+                        setIgnoreUpdateRule(remoteRules[j]);
                         if (myRules[i].title == remoteRules[j].title) {
                             remoteRules[j].oldVersion = myRules[i].version;
                             //remoteRules[j].rule=myRules[i].rule;
@@ -374,6 +379,7 @@ if (getUrl().indexOf("rule://") != -1) {
                         i--;
                         continue;
                     }
+                    setIgnoreUpdateRule(remoteRules[i]);
                     for (var j = 0; j < myRules.length; j++) {
                         if (myRules[j].title == remoteRules[i].title) {
                             remoteRules[i].oldVersion = myRules[j].version;
@@ -398,9 +404,15 @@ if (getUrl().indexOf("rule://") != -1) {
 
             function merge(left, right) {
                 var result = [];
+                var ignoreUpdateList = [];
+                var isThisVersionList = [];
 
                 while (left.length > 0 && right.length > 0) {
-                    if (left[0].oldVersion < left[0].version) {
+                    if (left[0].isIgnoreUpdate == true) {
+                        ignoreUpdateList.push(left.shift());
+                    } else if (right[0].isIgnoreUpdate == true) {
+                        ignoreUpdateList.push(right.shift());
+                    } else if (left[0].oldVersion < left[0].version) {
                         result.push(left.shift());
                     } else if (right[0].oldVersion < right[0].version) {
                         result.push(right.shift());
@@ -409,10 +421,15 @@ if (getUrl().indexOf("rule://") != -1) {
                     } else if (right[0].oldVersion == null) {
                         result.push(right.shift());
                     } else {
-                        result.push(left.shift());
-                        result.push(right.shift());
+                        isThisVersionList.push(left.shift());
+                        isThisVersionList.push(right.shift());
                     }
                 }
+
+                // TODO 对没有需要更新却又忽略更新的规则，不排序
+                while (ignoreUpdateList.length) result.push(ignoreUpdateList.shift());
+
+                while (isThisVersionList.length) result.push(isThisVersionList.shift());
 
                 while (left.length)
                     result.push(left.shift());
@@ -436,7 +453,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 var j = remoteRules[i];
                 var r = {};
                 if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
-                r.desc = noIgnoreUpdate != true && isIgnoreUpdateRule(j) == true ? "该规则已忽略本次更新" : desc(myRules, j);
+                r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
                 r.title = j.title;
                 r.url = isInArray(myRules, j) ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + j.title)) : (j.rule || "");
                 //r.content = j.updateText;
