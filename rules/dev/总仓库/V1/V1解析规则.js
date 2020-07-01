@@ -23,6 +23,10 @@ var res = {};
 var d = [];
 var mRule = JSON.parse(getRule());
 
+// 设置 true 一键净化，除了规则和仓库通知，啥也不要
+var hideAll = false;
+// 规则数量显示开关，不需要显示请设置为true
+var noRulesNum = false;
 // 是否允许超过一定规则数后改变显示样式，默认不开启，要开始请设置为 true
 var needChangeShowType = false;
 // 设置最大显示完整文本的规则数，大于设置值则显示为按钮样式(默认 text_2)
@@ -48,7 +52,7 @@ var ignoreUpdateRuleList = [
 // {title: "预告片•Re", author: "Reborn"},
 ];
 // 云端忽略更新列表，格式是JSON数组，请自己设置
-var remoteIgnoreListUrl = "https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json";
+var remoteIgnoreListUrl = "";
 
 // 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
 
@@ -367,6 +371,12 @@ if (remoteRules.length == 0) {
     }
 
     remoteRules = mergeSort(remoteRules);
+
+    if (noRulesNum != true && hideAll != true)
+        d.push({
+            title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则<b/>",
+            col_type: "text_1"
+        });
 
     for (var i = 0; i < remoteRules.length; i++) {
         var j = remoteRules[i];
