@@ -409,6 +409,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                 titleRegex = new RegExp(remoteRuleMappingTitle, "g");
                                 remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
+                                    remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
                                 }
@@ -443,6 +444,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                 titleRegex = new RegExp(remoteRuleMappingTitle, "g");
                                 remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
+                                    remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
                                 }
@@ -524,8 +526,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
                 r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
                 r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true? j.mappingTitle : j.title;
-                // TODO 需要远端 Mapping 本地
-                r.url = isInRulesWithMapping(myRules, j) ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" +  j.title)) : (j.rule || "");
+                r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
                 //r.content = j.updateText;
                 d.push(r);
             }
