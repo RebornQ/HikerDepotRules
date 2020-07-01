@@ -54,7 +54,9 @@ var ignoreUpdateRuleList = [
 // 云端忽略更新列表，格式是JSON数组，请自己设置
 var remoteIgnoreListUrl = "";
 
-// 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+// 参考链接：
+// https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+// https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
 
 // 总仓库更新地址
 var remoteDepotRuleUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/depotRule.json";
@@ -186,6 +188,10 @@ function isIgnoreUpdateRule(rule) {
     return false;
 }
 
+function setIgnoreUpdateRule(rule) {
+    if (isIgnoreUpdateRule(rule) == true) rule.isIgnoreUpdate = true;
+}
+
 var rules = [];
 eval("rules=" + getResCode());
 var myRules = [];
@@ -306,6 +312,7 @@ if (remoteRules.length == 0) {
                     j--;
                     continue;
                 }
+                setIgnoreUpdateRule(remoteRules[j]);
                 if (myRules[i].title == remoteRules[j].title) {
                     remoteRules[j].oldVersion = myRules[i].version;
                     //remoteRules[j].rule=myRules[i].rule;
@@ -321,6 +328,7 @@ if (remoteRules.length == 0) {
                 i--;
                 continue;
             }
+            setIgnoreUpdateRule(remoteRules[i]);
             for (var j = 0; j < myRules.length; j++) {
                 if (myRules[j].title == remoteRules[i].title) {
                     remoteRules[i].oldVersion = myRules[j].version;
@@ -345,9 +353,15 @@ if (remoteRules.length == 0) {
 
     function merge(left, right) {
         var result = [];
+        var ignoreUpdateList = [];
+        var isThisVersionList = [];
 
         while (left.length > 0 && right.length > 0) {
-            if (left[0].oldVersion < left[0].version) {
+            if (left[0].isIgnoreUpdate == true && left[0].oldVersion != left[0].version) {
+                ignoreUpdateList.push(left.shift());
+            } else if (right[0].isIgnoreUpdate == true && right[0].oldVersion != right[0].version) {
+                ignoreUpdateList.push(right.shift());
+            } else if (left[0].oldVersion < left[0].version) {
                 result.push(left.shift());
             } else if (right[0].oldVersion < right[0].version) {
                 result.push(right.shift());
@@ -356,10 +370,14 @@ if (remoteRules.length == 0) {
             } else if (right[0].oldVersion == null) {
                 result.push(right.shift());
             } else {
-                result.push(left.shift());
-                result.push(right.shift());
+                isThisVersionList.push(left.shift());
+                isThisVersionList.push(right.shift());
             }
         }
+
+        while (ignoreUpdateList.length) result.push(ignoreUpdateList.shift());
+
+        while (isThisVersionList.length) result.push(isThisVersionList.shift());
 
         while (left.length)
             result.push(left.shift());
@@ -382,7 +400,7 @@ if (remoteRules.length == 0) {
         var j = remoteRules[i];
         var r = {};
         if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
-        r.desc = noIgnoreUpdate != true && isIgnoreUpdateRule(j) == true ? "该规则已忽略本次更新" : desc(myRules, j);
+        r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) ? "该规则已忽略本次更新" : desc(myRules, j);
         r.title = j.title;
         r.url = isInArray(myRules, j) ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + j.title)) : (j.rule || "");
         //r.content = j.updateText;
