@@ -45,7 +45,8 @@ var overMaxShowType = "text_2";
  */
 var rulesMapping = [
     // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
-    // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
+    // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
+    // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
 ];
 // 云端规则映射列表链接，格式是JSON数组，请自己设置
 var remoteRulesMappingUrl = "";
@@ -289,12 +290,13 @@ if (getUrl().indexOf("rule://") != -1) {
             myRules.push(getRuleNoSymbols(rule, symbols));
         }
     }
+
     // setError(JSON.stringify(myRules));
 
     function getRuleInRulesWithMapping(rules, rule) {
         if (rules == null || rules.length == 0 || rule == null || rule.mappingTitle == null) return null;
         for (var i = 0; i < rules.length; i++) {
-            if (rules[i].mappingTitle !=null && rules[i].mappingTitle == rule.mappingTitle && rules[i].author == author) return rules[i];
+            if (rules[i].mappingTitle != null && rules[i].mappingTitle == rule.mappingTitle && rules[i].author == author) return rules[i];
         }
         return null;
     }
@@ -399,8 +401,8 @@ if (getUrl().indexOf("rule://") != -1) {
                             continue;
                         }
                         setIgnoreUpdateRule(remoteRule);
-                        try {
-                            for (var k = 0; k < rulesMapping.length; k++) {
+                        for (var k = 0; k < rulesMapping.length; k++) {
+                            try {
                                 var ruleMapping = rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var titleRegex = new RegExp(localRuleMappingTitle, "g");
@@ -412,9 +414,11 @@ if (getUrl().indexOf("rule://") != -1) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
+                                    break;
                                 }
+                            } catch (e) {
                             }
-                        } catch (e) { }
+                        }
                         if (localRule.title == remoteRule.title) {
                             remoteRule.oldVersion = localRule.version;
                             //remoteRules[j].rule=myRules[i].rule;
@@ -434,8 +438,8 @@ if (getUrl().indexOf("rule://") != -1) {
                     setIgnoreUpdateRule(remoteRule);
                     for (var j = 0; j < myRules.length; j++) {
                         var localRule = myRules[j];
-                        try {
-                            for (var k = 0; k < rulesMapping.length; k++) {
+                        for (var k = 0; k < rulesMapping.length; k++) {
+                            try {
                                 var ruleMapping = rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var titleRegex = new RegExp(localRuleMappingTitle);
@@ -447,10 +451,12 @@ if (getUrl().indexOf("rule://") != -1) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
+                                    break;
                                 }
+                            } catch (e) {
                             }
+                        }
 
-                        } catch (e) { }
                         if (localRule.title == remoteRule.title) {
                             remoteRule.oldVersion = localRule.version;
                             //remoteRules[i].rule=myRules[j].rule;
@@ -525,7 +531,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 var r = {};
                 if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
                 r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
-                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true? j.mappingTitle : j.title;
+                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ? j.mappingTitle : j.title;
                 r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
                 //r.content = j.updateText;
                 d.push(r);
