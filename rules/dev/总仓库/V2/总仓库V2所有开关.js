@@ -57,6 +57,8 @@ var overMaxShowType = "text_2";
  * 示例：[{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}]
  */
 var rulesMapping = [ ];
+// 云端规则映射列表链接，格式是JSON数组，请自己设置
+var remoteRulesMappingUrl = "";
 
 // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false; 需要自行添加要被删掉的标记，格式为：["标记1", "标记2"]
 var needDelSymbol = true;
