@@ -38,6 +38,15 @@ var showFullTextMax = 10;
 // 设置超过允许显示完整文本的规则数后显示的样式
 var overMaxShowType = "text_2";
 
+/**
+ * 规则映射列表
+ * 左本地，右远端，本地映射为远端，达到替换内容的目的
+ * （注意，先映射后执行下面的删除标记）
+ */
+var rulesMapping = [
+    // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
+];
+
 // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
 var needDelSymbol = true;
 // 自行添加要被删掉的标记
@@ -68,7 +77,9 @@ var ignoreUpdateRuleList = [
 // 云端忽略更新列表，格式是JSON数组，请自己设置
 var remoteIgnoreListUrl = "";
 
-// 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+// 参考链接：
+// https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+// https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
 
 var remoteIgnoreList = [];
 try {
@@ -206,12 +217,26 @@ if (getUrl().indexOf("rule://") != -1) {
         return false;
     }
 
+    // 如果本地没有则提示导入新规则
+    // 因部分手机不支持es6语法，故注释掉
+    /*var myRulesMap = new Map();
+    myRules.map(rule => {
+        myRulesMap.set(rule.title, true);
+    });
+    //setError(myRulesMap.get("腾讯•Re"));*/
+
     function getRuleInArray(rules, rule) {
         if (rules == null || rules.length == 0) return null;
         for (var i = 0; i < rules.length; i++) {
             if (rules[i].title == rule.title && rules[i].author == author) return rules[i];
         }
         return null;
+    }
+
+    // 原始方法，比较耗时
+    function isInArray(rules, rule) {
+        if (getRuleInArray(rules, rule) != null) return true;
+        else return false;
     }
 
     function isIgnoreUpdateRule(rule) {
@@ -243,33 +268,35 @@ if (getUrl().indexOf("rule://") != -1) {
         if (isIgnoreUpdateRule(rule) == true) rule.isIgnoreUpdate = true;
     }
 
+    function getRuleMapping(rule, index) {
+        if (rulesMapping.length == 0) return null;
+        for (var i = 0; i < rulesMapping.length; i++) {
+            if (rule.title == rulesMapping[i][index].title && rule.author == rulesMapping[i][index].author) {
+                rulesMapping[i][index].isMapped = true;
+                return rulesMapping[i];
+            }
+        }
+        return null;
+    }
+
+    function getRuleMappingTitle(rules, rule) {
+        var ruleMapping = getRuleMapping(rule, 1);
+        if (ruleMapping != null && ruleMapping[0].isMapped == true) return ruleMapping[0].title;
+        else return rule.title;
+    }
+
     var rules = [];
     eval("rules=" + fetch("hiker://home", {}));
     var myRules = [];
     for (var i = 0; i < rules.length; i++) {
         var rule = rules[i];
         if (rule.author == author) {
+            var ruleMapping = getRuleMapping(rule, 0);
+            if (ruleMapping != null) rule.title = ruleMapping[1].title;
             myRules.push(getRuleNoSymbols(rule, symbols));
         }
     }
     // setError(JSON.stringify(myRules));
-
-    // 如果本地没有则提示导入新规则
-    // 因部分手机不支持es6语法，故注释掉
-    /*var myRulesMap = new Map();
-    myRules.map(rule => {
-        myRulesMap.set(rule.title, true);
-    });
-    //setError(myRulesMap.get("腾讯•Re"));*/
-
-    // 原始方法，比较耗时
-    function isInArray(rules, rule) {
-        if (rules.length == 0) return false;
-        for (var i = 0; i < rules.length; i++) {
-            if (rules[i].title == rule.title && rules[i].author == author) return true;
-        }
-        return false;
-    }
 
     var desc = function (rules, rule) {
         if (isInArray(rules, rule) == true) {
@@ -305,7 +332,7 @@ if (getUrl().indexOf("rule://") != -1) {
             eval("remoteSource=" + remoteSource);
             if (apiType == "0") {
                 remoteRules = remoteSource;
-            } else if (apiType == "1"){
+            } else if (apiType == "1") {
                 eval("remoteRules=" + base64Decode(remoteSource.content));
             }
             if (remoteRules.data != null) {
@@ -453,7 +480,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 var r = {};
                 if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
                 r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
-                r.title = j.title;
+                r.title = getRuleMappingTitle(myRules, j);
                 r.url = isInArray(myRules, j) ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + j.title)) : (j.rule || "");
                 //r.content = j.updateText;
                 d.push(r);
