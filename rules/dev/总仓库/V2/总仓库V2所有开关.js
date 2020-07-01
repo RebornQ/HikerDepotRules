@@ -7,14 +7,11 @@
  */
 
 // 在这里添加仓库配置，可使本地添加的仓库置顶
-var authorList = [
-];
+var authorList = [ ];
 // 在这里添加仓库配置，可使本地添加的仓库置底
-var authorListBottom = [
-];
-// 在这里添加随机头像，有默认值
-var picUrlList = [
-];
+var authorListBottom = [ ];
+// 在这里添加随机头像
+var picUrlList = [ ];
 
 // 远程仓库配置Url，有默认值
 var remoteAuthorListUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/authorList.json";
@@ -25,12 +22,12 @@ var remoteDepotRuleUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/
 var needHideRule = true;
 var hideSymbols = [];
 
-// 若需要永久显示开发文档，则取消注释
-// var alwaysShowDevDoc = true;
-// 若需要永久显示提示，则取消注释
-// var alwaysShowTips = true;
-// 若需要永久显示例子，则取消注释
-// var alwaysShowEtc = true;
+// true/false 为 永久 显示/隐藏 开发文档，不需要永久请设置为''或null
+var alwaysShowDevDoc = true;
+// true/false 为 永久 显示/隐藏 提示，不需要永久请设置为''或null
+var alwaysShowTips = true;
+// true/false 为 永久 显示/隐藏 例子，不需要永久请设置为''或null
+var alwaysShowEtc = true;
 
 
 /**
@@ -52,6 +49,15 @@ var showFullTextMax = 10;
 // 设置超过允许显示完整文本的规则数后显示的样式
 var overMaxShowType = "text_2";
 
+/**
+ * 规则映射列表
+ * 左本地，右远端，本地映射为远端，达到替换内容的目的
+ * （注意，先映射后执行下面的删除标记）
+ *
+ * 示例：[{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}]
+ */
+var rulesMapping = [ ];
+
 // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false; 需要自行添加要被删掉的标记，格式为：["标记1", "标记2"]
 var needDelSymbol = true;
 var symbols = [];
@@ -69,5 +75,5 @@ var noIgnoreUpdate = false;
 var remoteIgnoreListUrl = "";
 // 参考链接：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
 
-// 若需要永久显示二级列表的提示，则取消注释
-// var alwaysShowSecondListTips = true;
+// true/false 为 永久 显示/隐藏 二级列表的提示，不需要永久请设置为''或null
+var alwaysShowSecondListTips = true;
