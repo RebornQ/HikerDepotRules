@@ -41,11 +41,13 @@ var overMaxShowType = "text_2";
 /**
  * 规则映射列表
  * 左本地，右远端，本地映射为远端，达到替换内容的目的
- * （注意，先映射后执行下面的删除标记）
+ * （注意，程序逻辑为先映射后执行下面的删除标记）
  */
 var rulesMapping = [
     // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
 ];
+// 云端规则映射列表链接，格式是JSON数组，请自己设置
+var remoteRulesMappingUrl = "";
 
 // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
 var needDelSymbol = true;
@@ -74,7 +76,7 @@ var noIgnoreUpdate = false;
 var ignoreUpdateRuleList = [
 // {title: "预告片•Re", author: "Reborn"},
 ];
-// 云端忽略更新列表，格式是JSON数组，请自己设置
+// 云端忽略更新列表链接，格式是JSON数组，请自己设置
 var remoteIgnoreListUrl = "";
 
 // 参考链接：
@@ -88,6 +90,15 @@ try {
 }
 Array.prototype.push.apply(ignoreUpdateRuleList, remoteIgnoreList);
 // setError(JSON.stringify(remoteIgnoreList));
+
+
+var remoteRulesMapping = [];
+try {
+    eval("remoteRulesMapping=" + fetch(remoteRulesMappingUrl, {}));
+} catch (e) {
+}
+Array.prototype.push.apply(rulesMapping, remoteRulesMapping);
+// setError(JSON.stringify(rulesMapping));
 
 // 注意事项文字
 var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
