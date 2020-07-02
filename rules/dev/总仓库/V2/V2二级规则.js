@@ -156,7 +156,9 @@ function getSettingsContent(settingsFileUrl, isRemote) {
     }
     return false;
 }
-// 先读本地再读远程，远程炸了用本地，本地炸了用默认；本地缓存远程时先比对md5不一致再缓存
+// TODO 目前会导致一旦仓库配置的本地缓存产生，则无法更改默认配置中同字段内容的问题
+// 默认配置与本地缓存/云端合并内容的方式，以本地缓存/云端为主（合并优先级为：云端->本地缓存->默认配置）
+// 先读本地再读云端，云端炸了用本地，本地炸了用默认；本地缓存云端时先比对md5不一致再缓存
 if (needCacheSetting == true) getSettingsContent(settingsCacheFile, false);
 getSettingsContent(depotStatus.settingsRemoteFile, true);
 

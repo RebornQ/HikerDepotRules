@@ -171,6 +171,7 @@ if (depotStatus.showTips != false) {
         settings.hideSymbols.push("[例子]");
     }
 
+    // TODO mRule.version != depotStatus.version 不生效？
     if (depotStatus.showDevDoc != false || mRule.version != depotStatus.version) {
         d.push({
             title: "【大佬通道】\n‘‘(仅显一次)’’",
