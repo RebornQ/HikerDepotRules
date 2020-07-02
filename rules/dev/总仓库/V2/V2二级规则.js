@@ -45,9 +45,12 @@ var settings = {
     /**
      * 规则映射列表
      * 左本地，右远端，本地映射为远端，达到替换内容的目的
+     * 需要全名匹配需要在映射表中加入{ "matchAll": true }
      * （注意，程序逻辑为先映射后执行下面的删除标记）
      */
     rulesMapping: [
+        // [{"title": "嗨哆咪", "author": "Reborn"}, {"title": "嗨哚咪影视", "author": "Reborn"}, {"matchAll": true}],
+        // [{"title": "预告片", "author": "Reborn"}, {"title": "预告片(?=•Re)", "author": "Reborn"}],
         // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
         // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
         // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
@@ -455,13 +458,19 @@ if (getUrl().indexOf("rule://") != -1) {
                         setIgnoreUpdateRule(remoteRule);
                         for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
-                                var ruleMapping = settings.rulesMapping[k];
+                                //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
+                                var ruleMapping = rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
-                                var titleRegex = new RegExp(localRuleMappingTitle, "g");
-                                localRule.mappingTitle = localRule.title.match(titleRegex)[0];
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
-                                titleRegex = new RegExp(remoteRuleMappingTitle, "g");
-                                remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
+                                    localRule.mappingTitle = remoteRuleMappingTitle;
+                                    remoteRule.mappingTitle = remoteRuleMappingTitle;
+                                } else {
+                                    var titleRegex = new RegExp(localRuleMappingTitle);
+                                    localRule.mappingTitle = localRule.mappingTitle != null && localRule.mappingTitle != "" ? localRule.mappingTitle : localRule.title.match(titleRegex)[0];
+                                    titleRegex = new RegExp(remoteRuleMappingTitle, "g");
+                                    remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                }
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
@@ -492,13 +501,19 @@ if (getUrl().indexOf("rule://") != -1) {
                         var localRule = myRules[j];
                         for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
-                                var ruleMapping = settings.rulesMapping[k];
+                                //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
+                                var ruleMapping = rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
-                                var titleRegex = new RegExp(localRuleMappingTitle);
-                                localRule.mappingTitle = localRule.title.match(titleRegex)[0];
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
-                                titleRegex = new RegExp(remoteRuleMappingTitle, "g");
-                                remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
+                                    localRule.mappingTitle = remoteRuleMappingTitle;
+                                    remoteRule.mappingTitle = remoteRuleMappingTitle;
+                                } else {
+                                    var titleRegex = new RegExp(localRuleMappingTitle);
+                                    localRule.mappingTitle = localRule.mappingTitle != null && localRule.mappingTitle != "" ? localRule.mappingTitle : localRule.title.match(titleRegex)[0];
+                                    titleRegex = new RegExp(remoteRuleMappingTitle, "g");
+                                    remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                }
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
