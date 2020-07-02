@@ -25,6 +25,8 @@ eval(getCryptoJS());
 
 // 仓库配置本地缓存文件
 var settingsCacheFile = "hiker://files/depot_v2_settings.json";
+// 本地缓存开关
+var needCacheSetting = true;
 
 // 仓库个性设置
 var settings = {
@@ -155,7 +157,7 @@ function getSettingsContent(settingsFileUrl, isRemote) {
     return false;
 }
 // 先读本地再读远程，远程炸了用本地，本地炸了用默认；本地缓存远程时先比对md5不一致再缓存
-getSettingsContent(settingsCacheFile, false);
+if (needCacheSetting == true) getSettingsContent(settingsCacheFile, false);
 getSettingsContent(depotStatus.settingsRemoteFile, true);
 
 var remoteIgnoreList = [];
