@@ -165,13 +165,11 @@ if (depotStatus.showTips != false) {
 
     if (depotStatus.showEtc != false || mRule.version != depotStatus.version) {
         depotStatus.showEtc = false;
-        depotStatus.version = mRule.version;
         writeDepotStatusToFile(depotStatus);
     } else {
         settings.hideSymbols.push("[例子]");
     }
 
-    // TODO mRule.version != depotStatus.version 不生效？
     if (depotStatus.showDevDoc != false || mRule.version != depotStatus.version) {
         d.push({
             title: "【大佬通道】\n‘‘(仅显一次)’’",
@@ -180,6 +178,11 @@ if (depotStatus.showTips != false) {
             col_type: "text_center_1"
         });
         depotStatus.showDevDoc = false;
+        writeDepotStatusToFile(depotStatus);
+    }
+
+    if (mRule.version != depotStatus.version) {
+        depotStatus.version = mRule.version;
         writeDepotStatusToFile(depotStatus);
     }
 
