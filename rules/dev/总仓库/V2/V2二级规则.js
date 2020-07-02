@@ -21,6 +21,10 @@ var {
 // js:
 var res = {};
 var d = [];
+eval(getCryptoJS());
+
+// 仓库配置本地缓存文件
+var settingsCacheFile = "hiker://files/depot_v2_settings.json";
 
 // 仓库个性设置
 var settings = {
@@ -73,22 +77,75 @@ var settings = {
     // 参考链接：
     // https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
     // https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
-
-    // 注意事项文字
-    waringText: "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页",
-    // 首次导入文字
-    firstImportText: "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项",
-    statusCacheFile: getVar('statusCacheFile'),
 };
+// 注意事项文字
+var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
+// 首次导入文字
+var firstImportText = "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项";
+var statusCacheFile = getVar('statusCacheFile');
 // 若不是第一次使用总仓库则存储仓库状态
-var depotStatus = {};
+var depotStatus = {
+    // 此处所有配置都会被下方覆盖，请移步下方配置 depotStatus.xxx = xxx;
+};
+var depotSettings = {
+};
 
 if (settings.needHideEtc == true) settings.hideSymbols.push("[例子]");
 
 // 仓库状态缓存文件地址
-if (settings.statusCacheFile == null || settings.statusCacheFile == "") settings.statusCacheFile = "hiker://files/depotStatus_v2.json";
+if (statusCacheFile == null || statusCacheFile == "") statusCacheFile = "hiker://files/depotStatus_v2.json";
 // 举例 hiker://files/depotStatus_v2.json
-// setError(statusCacheFile);
+
+var depotStatusFile = fetch(statusCacheFile, {});
+if (depotStatusFile != "") {
+    eval("depotStatus=" + depotStatusFile);
+}
+
+// 仓库配置远程地址，请自行配置
+// 举例：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/depot_v2_settings.json
+depotStatus.settingsRemoteFile = "";
+// 若需要永久显示提示，则取消注释
+// depotStatus.showSecondListTips = true;
+
+function writeObjectToFile(fileUrl, object) {
+    writeFile(fileUrl, JSON.stringify(object));
+}
+
+// 把总仓库状态写入文件
+function writeDepotStatusToFile(depotStatus) {
+    writeObjectToFile(statusCacheFile, depotStatus);
+}
+
+function writeSettingsToFile(settings) {
+    depotSettings.detail_find_rule_settings = settings;
+    writeObjectToFile(settingsCacheFile, depotSettings);
+}
+
+function getSettingsContent(settingsFileUrl, isRemote) {
+    if (settingsFileUrl == "") return false;
+    var settingsCacheFileContent = fetch(settingsFileUrl, {});
+    if (settingsCacheFileContent != null && settingsCacheFileContent != "") {
+        eval("var settingsTemp=" + settingsCacheFileContent);
+        if (settingsTemp.detail_find_rule_settings != null && JSON.stringify(settingsTemp.detail_find_rule_settings) != "{}") {
+            depotSettings = settingsTemp;
+            settings = settingsTemp.detail_find_rule_settings;
+            if (isRemote == true) {
+                // TODO 通过每次比对缓存的MD5(JSON.stringify(settings))达到检测上次是否改变了仓库设置
+                var settingsMD5Now = CryptoJS.MD5(JSON.stringify(settings)).toString(CryptoJS.enc.Hex);
+                if (settingsMD5Now != depotStatus.cacheSettingsMD5) {
+                    depotStatus.cacheSettingsMD5 = settingsMD5Now;
+                    writeDepotStatusToFile(depotStatus);
+                    writeSettingsToFile(settings);
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+// 先读本地再读远程，远程炸了用本地，本地炸了用默认；本地缓存远程时先比对md5不一致再缓存
+getSettingsContent(settingsCacheFile, false);
+getSettingsContent(depotStatus.settingsRemoteFile, true);
 
 var remoteIgnoreList = [];
 try {
@@ -155,18 +212,6 @@ if (apiType == "0") {
     // setError(remoteUrl);
     // var remoteHome = "https://gitee.com/" + owner + "/" + repo + "/blob/master/update.json";
 }
-
-// 把总仓库状态写入文件
-function writeDepotStatusToFile(depotStatus) {
-    writeFile(settings.statusCacheFile, JSON.stringify(depotStatus));
-}
-
-var depotStatusFile = fetch(settings.statusCacheFile, {});
-if (depotStatusFile != "") {
-    eval("depotStatus=" + depotStatusFile);
-}
-// 若需要永久显示提示，则取消注释
-// depotStatus.showSecondListTips = true;
 
 if (getUrl().indexOf("rule://") != -1) {
     var remoteDepotRule = JSON.parse(getUrl().split("#")[1]);
@@ -316,7 +361,7 @@ if (getUrl().indexOf("rule://") != -1) {
     if (depotStatus.showSecondListTips != false) {
         d.push({
             title: "首次导入提示\n‘‘(仅显一次)’’",
-            desc: settings.firstImportText,
+            desc: firstImportText,
             col_type: "text_center_1"
         });
         depotStatus.showSecondListTips = false;
@@ -365,7 +410,7 @@ if (getUrl().indexOf("rule://") != -1) {
             if (settings.noWarning != true && settings.hideAll != true) {
                 d.push({
                     title: "注意事项",
-                    desc: settings.waringText,
+                    desc: waringText,
                     col_type: "pic_1",
                     url: "hiker://home@总仓库"
                 });
