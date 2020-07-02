@@ -71,6 +71,7 @@ if (depotStatusFile != "") {
 // 仓库配置远程地址，请自行配置
 // 举例：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/depot_v2_settings.json
 depotStatus.settingsRemoteFile = "";
+
 // 若需要永久显示开发文档，则取消注释
 // depotStatus.showDevDoc = true;
 // 若需要永久显示提示，则取消注释
@@ -92,6 +93,14 @@ function writeSettingsToFile(settings) {
     writeObjectToFile(settingsCacheFile, depotSettings);
 }
 
+// 合并对象
+function extend(target, source) {
+    for (var obj in source) {
+        target[obj] = source[obj];
+    }
+    return target;
+}
+
 function getSettingsContent(settingsFileUrl, isRemote) {
     if (settingsFileUrl == "") return false;
     var settingsCacheFileContent = fetch(settingsFileUrl, {});
@@ -99,7 +108,7 @@ function getSettingsContent(settingsFileUrl, isRemote) {
         eval("var settingsTemp=" + settingsCacheFileContent);
         if (settingsTemp.find_rule_settings != null && JSON.stringify(settingsTemp.find_rule_settings) != "{}") {
             depotSettings = settingsTemp;
-            settings = settingsTemp.find_rule_settings;
+            extend(settings, settingsTemp.find_rule_settings);
             if (isRemote == true) {
                 var settingsMD5Now = CryptoJS.MD5(JSON.stringify(settings)).toString(CryptoJS.enc.Hex);
                 if (settingsMD5Now != depotStatus.cacheFindRuleSettingsMD5) {
@@ -159,7 +168,7 @@ if (depotStatus.showTips != false) {
         settings.hideSymbols.push("[例子]");
     }
 
-    if (depotStatus.showDevDoc != false) {
+    if (depotStatus.showDevDoc != false || mRule.version != depotStatus.version) {
         d.push({
             title: "【大佬通道】\n‘‘(仅显一次)’’",
             desc: "‘‘点击查看V2总仓库开发文档’’\n规则里有永久显示开关可以自己去开",

@@ -104,6 +104,7 @@ if (depotStatusFile != "") {
 // 仓库配置远程地址，请自行配置
 // 举例：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/depot_v2_settings.json
 depotStatus.settingsRemoteFile = "";
+
 // 若需要永久显示提示，则取消注释
 // depotStatus.showSecondListTips = true;
 
@@ -121,6 +122,14 @@ function writeSettingsToFile(settings) {
     writeObjectToFile(settingsCacheFile, depotSettings);
 }
 
+// 合并对象
+function extend(target, source) {
+    for (var obj in source) {
+        target[obj] = source[obj];
+    }
+    return target;
+}
+
 function getSettingsContent(settingsFileUrl, isRemote) {
     if (settingsFileUrl == "") return false;
     var settingsCacheFileContent = fetch(settingsFileUrl, {});
@@ -128,7 +137,7 @@ function getSettingsContent(settingsFileUrl, isRemote) {
         eval("var settingsTemp=" + settingsCacheFileContent);
         if (settingsTemp.detail_find_rule_settings != null && JSON.stringify(settingsTemp.detail_find_rule_settings) != "{}") {
             depotSettings = settingsTemp;
-            settings = settingsTemp.detail_find_rule_settings;
+            extend(settings, settingsTemp.detail_find_rule_settings);
             if (isRemote == true) {
                 var settingsMD5Now = CryptoJS.MD5(JSON.stringify(settings)).toString(CryptoJS.enc.Hex);
                 if (settingsMD5Now != depotStatus.cacheDetailFindRuleSettingsMD5) {
