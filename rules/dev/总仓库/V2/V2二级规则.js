@@ -130,10 +130,9 @@ function getSettingsContent(settingsFileUrl, isRemote) {
             depotSettings = settingsTemp;
             settings = settingsTemp.detail_find_rule_settings;
             if (isRemote == true) {
-                // TODO 通过每次比对缓存的MD5(JSON.stringify(settings))达到检测上次是否改变了仓库设置
                 var settingsMD5Now = CryptoJS.MD5(JSON.stringify(settings)).toString(CryptoJS.enc.Hex);
-                if (settingsMD5Now != depotStatus.cacheSettingsMD5) {
-                    depotStatus.cacheSettingsMD5 = settingsMD5Now;
+                if (settingsMD5Now != depotStatus.cacheDetailFindRuleSettingsMD5) {
+                    depotStatus.cacheDetailFindRuleSettingsMD5 = settingsMD5Now;
                     writeDepotStatusToFile(depotStatus);
                     writeSettingsToFile(settings);
                 }
