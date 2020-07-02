@@ -662,13 +662,12 @@ if (getUrl().indexOf("rule://") != -1) {
 
             if (settings.noRulesNum != true && settings.hideAll != true)
                 d.push({
-                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则" +
+                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则<b/>" +
                         " ("
                         + "更新:‘‘" + depotRulesStatus.updateNum
                         + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
                         + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
-                        + "’’)" +
-                        "<b/>",
+                        + "’’)",
                     col_type: "text_1",
                 });
 
