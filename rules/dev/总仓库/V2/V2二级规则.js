@@ -364,10 +364,37 @@ if (getUrl().indexOf("rule://") != -1) {
     }
 
     var desc = function (rules, rule) {
+        if (rule != null && rule.version < 0) return "仓库无法检测该规则类型，请‘‘看规则更新时间’’";
         if (isInRulesWithMapping(rules, rule) == true || isInArray(rules, rule) == true) {
-            return rule.oldVersion != null && rule.oldVersion < rule.version ? ("‘‘有新版本：" + rule.version + "’’，点击导入新版本") + ("<br><br>[更新日志] " + (rule.updateText == null ? "无" : rule.updateText) + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "")) : rule.oldVersion > rule.version ? "‘‘喵？为啥你的规则版本比我还高？’’" : "当前规则已是最新版，点击跳到规则页" + (rule.tips != null && rule.tips != "" ? "\n\nTips: " + rule.tips : "");
+            return rule.oldVersion != null && rule.oldVersion < rule.version ?
+                ("‘‘有新版本：" + rule.version + "’’，点击导入新版本")
+                + (
+                    "<br><br>[更新日志] "
+                + (
+                    rule.updateText == null ?
+                        "无"
+                        : rule.updateText
+                )
+                + (
+                    rule.tips != null && rule.tips != "" ?
+                        "<br><br>Tips: " + rule.tips
+                        : ""
+                ))
+                : rule.oldVersion > rule.version ?
+                    "‘‘喵？为啥你的规则版本比我还高？’’"
+                    : "当前规则已是最新版，点击跳到规则页"
+                    + (
+                        rule.tips != null && rule.tips != "" ?
+                            "\n\nTips: " + rule.tips
+                            : ""
+                    );
         } else {
-            return "‘‘你尚未导入该规则’’，点击导入" + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "");
+            return "‘‘你尚未导入该规则’’，点击导入"
+                + (
+                    rule.tips != null && rule.tips != "" ?
+                    "<br><br>Tips: " + rule.tips :
+                    ""
+                );
         }
     };
 
@@ -598,10 +625,23 @@ if (getUrl().indexOf("rule://") != -1) {
                 var ruleWithMapping = getRuleInRulesWithMapping(remoteRules, j);
                 if (ruleWithMapping != null && getRuleInRulesWithMapping(myRules, j)) j = ruleWithMapping;
                 var r = {};
-                if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > settings.showFullTextMax) r.col_type = settings.overMaxShowType;
-                r.desc = (settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
-                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ? j.mappingTitle : j.title;
-                r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
+                if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > settings.showFullTextMax)
+                    r.col_type = settings.overMaxShowType;
+                r.desc = (settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ?
+                    "该规则已忽略本次更新"
+                    : desc(myRules, j);
+                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ?
+                    j.mappingTitle
+                    : j.title;
+                r.url = j.version < 0 ?
+                    j.rule || ""
+                    : isInArray(myRules, j) || j.isMapped == true ?
+                    (j.oldVersion != null && j.oldVersion < j.version ?
+                        (j.rule || "")
+                        : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ?
+                            j.localTitle
+                            : j.title)))
+                    : (j.rule || "");
                 //r.content = j.updateText;
                 d.push(r);
             }
