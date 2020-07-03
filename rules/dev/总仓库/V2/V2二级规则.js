@@ -21,91 +21,164 @@ var {
 // js:
 var res = {};
 var d = [];
+eval(getCryptoJS());
 
-// 设置 true 一键净化，除了规则和仓库通知，啥也不要
-var hideAll = false;
-// 小仓库标题开关（注意事项上面那个），不需要显示请设置为true
-var noTitle = true;
-// 注意事项开关，不需要显示请设置为true
-var noWarning = false;
-// 规则数量显示开关，不需要显示请设置为true
-var noRulesNum = false;
+// 仓库配置本地缓存文件
+var settingsCacheFile = "hiker://files/depot_v2_settings.json";
+// 本地缓存开关
+var needCacheSetting = true;
 
-// 是否允许超过一定规则数后改变显示样式，默认不开启
-var needChangeShowType = false;
-// 设置最大显示完整文本的规则数，大于设置值则显示为按钮样式(默认 text_2)
-var showFullTextMax = 10;
-// 设置超过允许显示完整文本的规则数后显示的样式
-var overMaxShowType = "text_2";
+// 仓库个性设置
+var settings = {
+    // 设置 true 一键净化，除了规则和仓库通知，啥也不要
+    hideAll: false,
+    // 小仓库标题开关（注意事项上面那个），不需要显示请设置为true
+    noTitle: true,
+    // 注意事项开关，不需要显示请设置为true
+    noWarning: false,
+    // 规则数量显示开关，不需要显示请设置为true
+    noRulesNum: false,
+    // 是否允许超过一定规则数后改变显示样式，默认不开启
+    needChangeShowType: false,
+    // 设置最大显示完整文本的规则数，大于设置值则显示为按钮样式(默认 text_2)
+    showFullTextMax: 10,
+    // 设置超过允许显示完整文本的规则数后显示的样式
+    overMaxShowType: "text_2",
+    /**
+     * 规则映射列表
+     * 左本地，右远端，本地映射为远端，达到替换内容的目的
+     * 需要全名匹配需要在映射表中加入{ "matchAll": true }
+     * （注意，程序逻辑为先映射后执行下面的删除标记）
+     */
+    rulesMapping: [
+        // [{"title": "嗨哆咪", "author": "Reborn"}, {"title": "嗨哚咪影视", "author": "Reborn"}, {"matchAll": true}],
+        // [{"title": "预告片", "author": "Reborn"}, {"title": "预告片(?=•Re)", "author": "Reborn"}],
+        // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
+        // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
+        // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
+    ],
+    // 云端规则映射列表链接，内容格式是JSON数组，请自己设置
+    remoteRulesMappingUrl: "",
+    // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
+    needDelSymbol: true,
+    // 自行添加要被删掉的标记
+    symbols: ["标记1", "标记2"],
+    // 隐藏开关，不需要隐藏请设置为false
+    needHideRule: true,
+    // 自行添加要隐藏的标记，格式为：[标记名]
+    hideSymbols: ["[模板]", "[未完成]"],
+    // 是否隐藏例子，需要隐藏请设置为true
+    needHideEtc: false,
 
-/**
- * 规则映射列表
- * 左本地，右远端，本地映射为远端，达到替换内容的目的
- * （注意，程序逻辑为先映射后执行下面的删除标记）
- */
-var rulesMapping = [
-    // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
-    // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
-    // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
-];
-// 云端规则映射列表链接，格式是JSON数组，请自己设置
-var remoteRulesMappingUrl = "";
+    // 若需要关闭忽略本次更新请设置为true
+    noIgnoreUpdate: false,
+    // 本地忽略更新列表，
+    // 内容模板为 {title: "规则名", author: "规则作者"}
+    ignoreUpdateRuleList: [
+        // {title: "预告片•Re", author: "Reborn"},
+    ],
+    // 云端忽略更新列表链接，格式是JSON数组，请自己设置
+    remoteIgnoreListUrl: "",
+    // 参考链接：
+    // https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+    // https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
+};
+// 注意事项文字
+var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
+// 首次导入文字
+var firstImportText = "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项";
+var statusCacheFile = getVar('statusCacheFile');
+// 若不是第一次使用总仓库则存储仓库状态
+var depotStatus = {
+    // 此处所有配置都会被下方覆盖，请移步下方配置 depotStatus.xxx = xxx;
+};
+var depotSettings = {};
 
-// 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
-var needDelSymbol = true;
-// 自行添加要被删掉的标记
-var symbols = ["标记1", "标记2"];
-
-// 隐藏开关，不需要隐藏请设置为false
-var needHideRule = true;
-// 自行添加要隐藏的标记，格式为：[标记名]
-var hideSymbols = ["[模板]", "[未完成]"];
-
-// 是否隐藏例子，需要隐藏请设置为true
-var needHideEtc = false;
-if (needHideEtc == true) hideSymbols.push("[例子]");
+if (settings.needHideEtc == true) settings.hideSymbols.push("[例子]");
 
 // 仓库状态缓存文件地址
-var statusCacheFile = getVar('statusCacheFile');
 if (statusCacheFile == null || statusCacheFile == "") statusCacheFile = "hiker://files/depotStatus_v2.json";
 // 举例 hiker://files/depotStatus_v2.json
-// setError(statusCacheFile);
 
-// 若需要关闭忽略本次更新请设置为true
-var noIgnoreUpdate = false;
-// 本地忽略更新列表，
-// 内容模板为 {title: "规则名", author: "规则作者"}
-var ignoreUpdateRuleList = [
-// {title: "预告片•Re", author: "Reborn"},
-];
-// 云端忽略更新列表链接，格式是JSON数组，请自己设置
-var remoteIgnoreListUrl = "";
+var depotStatusFile = fetch(statusCacheFile, {});
+if (depotStatusFile != "") {
+    eval("depotStatus=" + depotStatusFile);
+}
 
-// 参考链接：
-// https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
-// https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
+// 仓库配置远程地址，请自行配置
+// 举例：https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/depot_v2_settings.json
+depotStatus.settingsRemoteFile = "";
+
+// 若需要永久显示提示，则取消注释
+// depotStatus.showSecondListTips = true;
+
+function writeObjectToFile(fileUrl, object) {
+    writeFile(fileUrl, JSON.stringify(object));
+}
+
+// 把总仓库状态写入文件
+function writeDepotStatusToFile(depotStatus) {
+    writeObjectToFile(statusCacheFile, depotStatus);
+}
+
+function writeSettingsToFile(settings) {
+    depotSettings.detail_find_rule_settings = settings;
+    writeObjectToFile(settingsCacheFile, depotSettings);
+}
+
+// 合并对象
+function extend(target, source) {
+    for (var obj in source) {
+        target[obj] = source[obj];
+    }
+    return target;
+}
+
+function getSettingsContent(settingsFileUrl, isRemote) {
+    if (settingsFileUrl == "") return false;
+    var settingsCacheFileContent = fetch(settingsFileUrl, {});
+    if (settingsCacheFileContent != null && settingsCacheFileContent != "") {
+        eval("var settingsTemp=" + settingsCacheFileContent);
+        if (settingsTemp.detail_find_rule_settings != null && JSON.stringify(settingsTemp.detail_find_rule_settings) != "{}") {
+            depotSettings = settingsTemp;
+            extend(settings, settingsTemp.detail_find_rule_settings);
+            if (isRemote == true) {
+                var settingsMD5Now = CryptoJS.MD5(JSON.stringify(settings)).toString(CryptoJS.enc.Hex);
+                if (settingsMD5Now != depotStatus.cacheDetailFindRuleSettingsMD5) {
+                    depotStatus.cacheDetailFindRuleSettingsMD5 = settingsMD5Now;
+                    writeDepotStatusToFile(depotStatus);
+                    writeSettingsToFile(settings);
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+// TODO 目前会导致一旦仓库配置的本地缓存产生，则无法更改默认配置中同字段内容的问题
+// 默认配置与本地缓存/云端合并内容的方式，以本地缓存/云端为主（合并优先级为：云端->本地缓存->默认配置）
+// 先读本地再读云端，云端炸了用本地，本地炸了用默认；本地缓存云端时先比对md5不一致再缓存
+if (needCacheSetting == true) getSettingsContent(settingsCacheFile, false);
+getSettingsContent(depotStatus.settingsRemoteFile, true);
 
 var remoteIgnoreList = [];
 try {
-    eval("remoteIgnoreList=" + fetch(remoteIgnoreListUrl, {}));
+    eval("remoteIgnoreList=" + fetch(settings.remoteIgnoreListUrl, {}));
 } catch (e) {
 }
-Array.prototype.push.apply(ignoreUpdateRuleList, remoteIgnoreList);
+Array.prototype.push.apply(settings.ignoreUpdateRuleList, remoteIgnoreList);
 // setError(JSON.stringify(remoteIgnoreList));
 
 
 var remoteRulesMapping = [];
 try {
-    eval("remoteRulesMapping=" + fetch(remoteRulesMappingUrl, {}));
+    eval("remoteRulesMapping=" + fetch(settings.remoteRulesMappingUrl, {}));
 } catch (e) {
 }
-Array.prototype.push.apply(rulesMapping, remoteRulesMapping);
+Array.prototype.push.apply(settings.rulesMapping, remoteRulesMapping);
 // setError(JSON.stringify(rulesMapping));
 
-// 注意事项文字
-var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
-// 首次导入文字
-var firstImportText = "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项";
 
 /**
  * 可在此处自定义仓库，实现私人仓库
@@ -155,20 +228,6 @@ if (apiType == "0") {
     // var remoteHome = "https://gitee.com/" + owner + "/" + repo + "/blob/master/update.json";
 }
 
-// 把总仓库状态写入文件
-function writeDepotStatusToFile(depotStatus) {
-    writeFile(statusCacheFile, JSON.stringify(depotStatus));
-}
-
-// 若不是第一次使用总仓库则隐藏开发文档
-var depotStatus = {};
-var depotStatusFile = fetch(statusCacheFile, {});
-if (depotStatusFile != "") {
-    eval("depotStatus=" + depotStatusFile);
-}
-// 若需要永久显示提示，则取消注释
-// depotStatus.showSecondListTips = true;
-
 if (getUrl().indexOf("rule://") != -1) {
     var remoteDepotRule = JSON.parse(getUrl().split("#")[1]);
     d.push({
@@ -209,8 +268,15 @@ if (getUrl().indexOf("rule://") != -1) {
     });
 } else {
 
+    var depotRulesStatus = {
+        updateNum: 0,
+        noImportNum: 0,
+        ignoreNum: 0,
+        unknownTypeNum: 0
+    };
+
     function getRuleNoSymbols(rule, symbolList) {
-        if (needDelSymbol != true) return rule;
+        if (settings.needDelSymbol != true) return rule;
         var ruleTemp = rule;
         for (var i = 0; i < symbolList.length; i++) {
             var symbolReg = new RegExp(symbolList[i], "g");
@@ -221,11 +287,11 @@ if (getUrl().indexOf("rule://") != -1) {
     }
 
     function isHideRule(rule) {
-        if (needHideRule != true) return false;
+        if (settings.needHideRule != true) return false;
         // if (hideSymbols.length == 0) return false;
         var ruleTemp = rule;
-        for (var i = 0; i < hideSymbols.length; i++) {
-            if (ruleTemp.title.indexOf(hideSymbols[i]) != -1) return true;
+        for (var i = 0; i < settings.hideSymbols.length; i++) {
+            if (ruleTemp.title.indexOf(settings.hideSymbols[i]) != -1) return true;
         }
         return false;
     }
@@ -248,12 +314,11 @@ if (getUrl().indexOf("rule://") != -1) {
 
     // 原始方法，比较耗时
     function isInArray(rules, rule) {
-        if (getRuleInArray(rules, rule) != null) return true;
-        else return false;
+        return getRuleInArray(rules, rule) != null;
     }
 
     function isIgnoreUpdateRule(rule) {
-        if (isInArray(ignoreUpdateRuleList, rule) == true) {
+        if (isInArray(settings.ignoreUpdateRuleList, rule) == true) {
             var cacheIgnoreRule = getRuleInArray(depotStatus.ignoreUpdateRuleList, rule);
             if (cacheIgnoreRule == null) {
                 if (depotStatus.ignoreUpdateRuleList == null) depotStatus.ignoreUpdateRuleList = [];
@@ -287,7 +352,7 @@ if (getUrl().indexOf("rule://") != -1) {
     for (var i = 0; i < rules.length; i++) {
         var rule = rules[i];
         if (rule.author == author) {
-            myRules.push(getRuleNoSymbols(rule, symbols));
+            myRules.push(getRuleNoSymbols(rule, settings.symbols));
         }
     }
 
@@ -307,10 +372,44 @@ if (getUrl().indexOf("rule://") != -1) {
     }
 
     var desc = function (rules, rule) {
+        if (rule != null && rule.version < 0) {
+            depotRulesStatus.unknownTypeNum += 1;
+            return "仓库无法检测该规则类型，请‘‘看规则更新时间’’";
+        }
         if (isInRulesWithMapping(rules, rule) == true || isInArray(rules, rule) == true) {
-            return rule.oldVersion != null && rule.oldVersion < rule.version ? ("‘‘有新版本：" + rule.version + "’’，点击导入新版本") + ("<br><br>[更新日志] " + (rule.updateText == null ? "无" : rule.updateText) + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "")) : rule.oldVersion > rule.version ? "‘‘喵？为啥你的规则版本比我还高？’’" : "当前规则已是最新版，点击跳到规则页" + (rule.tips != null && rule.tips != "" ? "\n\nTips: " + rule.tips : "");
+            if (rule.oldVersion != null && rule.oldVersion < rule.version) {
+                depotRulesStatus.updateNum += 1;
+                return ("‘‘有新版本：" + rule.version + "’’，点击导入新版本")
+                    + (
+                        "<br><br>[更新日志] "
+                        + (
+                            rule.updateText == null ?
+                                "无"
+                                : rule.updateText
+                        )
+                        + (
+                            rule.tips != null && rule.tips != "" ?
+                                "<br><br>Tips: " + rule.tips
+                                : ""
+                        ));
+            } else {
+                return rule.oldVersion > rule.version ?
+                    "‘‘喵？为啥你的规则版本比我还高？’’"
+                    : "当前规则已是最新版，点击跳到规则页"
+                    + (
+                        rule.tips != null && rule.tips != "" ?
+                            "\n\nTips: " + rule.tips
+                            : ""
+                    );
+            }
         } else {
-            return "‘‘你尚未导入该规则’’，点击导入" + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "");
+            depotRulesStatus.noImportNum += 1;
+            return "‘‘你尚未导入该规则’’，点击导入"
+                + (
+                    rule.tips != null && rule.tips != "" ?
+                        "<br><br>Tips: " + rule.tips :
+                        ""
+                );
         }
     };
 
@@ -323,7 +422,7 @@ if (getUrl().indexOf("rule://") != -1) {
         depotStatus.showSecondListTips = false;
         writeDepotStatusToFile(depotStatus);
     } else {
-        if (noTitle != true && hideAll != true) {
+        if (settings.noTitle != true && settings.hideAll != true) {
             d.push({
                 title: "‘‘这里是 " + author + " 的规则小仓库’’",
                 // desc: "点击可访问规则仓库源",
@@ -363,7 +462,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 }
                 remoteRules = remoteRules.data;
             }
-            if (noWarning != true && hideAll != true) {
+            if (settings.noWarning != true && settings.hideAll != true) {
                 d.push({
                     title: "注意事项",
                     desc: waringText,
@@ -401,15 +500,22 @@ if (getUrl().indexOf("rule://") != -1) {
                             continue;
                         }
                         setIgnoreUpdateRule(remoteRule);
-                        for (var k = 0; k < rulesMapping.length; k++) {
+                        for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
-                                var ruleMapping = rulesMapping[k];
+                                //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
+                                var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
-                                var titleRegex = new RegExp(localRuleMappingTitle, "g");
-                                localRule.mappingTitle = localRule.title.match(titleRegex)[0];
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
-                                titleRegex = new RegExp(remoteRuleMappingTitle, "g");
-                                remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                // 全名映射
+                                if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
+                                    localRule.mappingTitle = remoteRuleMappingTitle;
+                                    remoteRule.mappingTitle = remoteRuleMappingTitle;
+                                } else {
+                                    var titleRegex = new RegExp(localRuleMappingTitle);
+                                    localRule.mappingTitle = localRule.mappingTitle != null && localRule.mappingTitle != "" ? localRule.mappingTitle : localRule.title.match(titleRegex)[0];
+                                    titleRegex = new RegExp(remoteRuleMappingTitle, "g");
+                                    remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                }
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
@@ -438,15 +544,22 @@ if (getUrl().indexOf("rule://") != -1) {
                     setIgnoreUpdateRule(remoteRule);
                     for (var j = 0; j < myRules.length; j++) {
                         var localRule = myRules[j];
-                        for (var k = 0; k < rulesMapping.length; k++) {
+                        for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
-                                var ruleMapping = rulesMapping[k];
+                                //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
+                                var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
-                                var titleRegex = new RegExp(localRuleMappingTitle);
-                                localRule.mappingTitle = localRule.title.match(titleRegex)[0];
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
-                                titleRegex = new RegExp(remoteRuleMappingTitle, "g");
-                                remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                // 全名映射
+                                if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
+                                    localRule.mappingTitle = remoteRuleMappingTitle;
+                                    remoteRule.mappingTitle = remoteRuleMappingTitle;
+                                } else {
+                                    var titleRegex = new RegExp(localRuleMappingTitle);
+                                    localRule.mappingTitle = localRule.mappingTitle != null && localRule.mappingTitle != "" ? localRule.mappingTitle : localRule.title.match(titleRegex)[0];
+                                    titleRegex = new RegExp(remoteRuleMappingTitle, "g");
+                                    remoteRule.mappingTitle = remoteRule.title.match(titleRegex)[0];
+                                }
                                 if (localRule.mappingTitle == remoteRule.mappingTitle) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
@@ -517,25 +630,49 @@ if (getUrl().indexOf("rule://") != -1) {
 
             remoteRules = mergeSort(remoteRules);
 
-            if (noRulesNum != true && hideAll != true)
-                d.push({
-                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则<b/>",
-                    col_type: "text_1"
-                });
-
+            var showRuleList = [];
             // setError(JSON.stringify(remoteRules));
             for (var i = 0; i < remoteRules.length; i++) {
                 var j = remoteRules[i];
                 var ruleWithMapping = getRuleInRulesWithMapping(remoteRules, j);
                 if (ruleWithMapping != null && getRuleInRulesWithMapping(myRules, j)) j = ruleWithMapping;
                 var r = {};
-                if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
-                r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
-                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ? j.mappingTitle : j.title;
-                r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
+                if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > settings.showFullTextMax)
+                    r.col_type = settings.overMaxShowType;
+                if ((settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version)) {
+                    depotRulesStatus.ignoreNum += 1;
+                    r.desc = "该规则已忽略本次更新";
+                } else {
+                    r.desc = desc(myRules, j);
+                }
+                r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ?
+                    j.mappingTitle
+                    : j.title;
+                r.url = j.version < 0 ?
+                    j.rule || ""
+                    : isInArray(myRules, j) || j.isMapped == true ?
+                        (j.oldVersion != null && j.oldVersion < j.version ?
+                            (j.rule || "")
+                            : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ?
+                                j.localTitle
+                                : j.title)))
+                        : (j.rule || "");
                 //r.content = j.updateText;
-                d.push(r);
+                showRuleList.push(r);
             }
+
+            if (settings.noRulesNum != true && settings.hideAll != true)
+                d.push({
+                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
+                        " ("
+                        + "更新:‘‘" + depotRulesStatus.updateNum
+                        + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
+                        + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
+                        + "’’)",
+                    col_type: "text_1",
+                });
+
+            while (showRuleList.length) d.push(showRuleList.shift())
 
         }
     }
