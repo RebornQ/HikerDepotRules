@@ -504,7 +504,7 @@ if (getUrl().indexOf("rule://") != -1) {
                         for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
                                 //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
-                                var ruleMapping = rulesMapping[k];
+                                var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
                                 if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
@@ -547,7 +547,7 @@ if (getUrl().indexOf("rule://") != -1) {
                         for (var k = 0; k < settings.rulesMapping.length; k++) {
                             try {
                                 //if ((localRule.mappingTitle != null && remoteRule.mappingTitle != null) || remoteRule.isMapped == true) break;
-                                var ruleMapping = rulesMapping[k];
+                                var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
                                 if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
