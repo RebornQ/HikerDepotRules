@@ -26,7 +26,7 @@ var key = getUrl().split("#")[1];
 key = "影视";
 
 if (key != null && key != "") {
-    var regExp = new RegExp("[^]*"+key+"[^]*", "g");
+    var regExp = new RegExp("[^]*"+key+"[^]*");
     // 仓库个性设置
     var settings = {
         // 在这里添加仓库配置，可使本地添加的仓库置顶
@@ -121,7 +121,9 @@ if (key != null && key != "") {
                 } catch (e) {
                 }*/
                 // 3.拿到搜索结果，提交
-                if (remoteRule.title.indexOf(key) != -1) {  // 用indexOf好像会快一点？正则性能不敢恭维啊~
+                if (regExp.test(remoteRule.title) == true) {
+                    // 用indexOf好像会快一点？正则性能不敢恭维啊~
+                    // 据这篇文章 https://www.jianshu.com/p/4cd4f74a0b20 测试是string.test比indexOf还快
                     d.push({
                         title: remoteRule.title,
                         url: "https://baidu.com#" + remoteRule.rule,
