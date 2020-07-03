@@ -114,14 +114,14 @@ if (key != null && key != "") {
         // 2.拿到单个仓库的规则列表
         if (remoteRules.length != 0) {
             for (var j = 0; j < remoteRules.length; j++) {
-                var searchResult = "";
+                // var searchResult = "";
                 var remoteRule = remoteRules[j];
-                try {
+                /*try {
                     searchResult = remoteRule.title.match(regExp)[0];
                 } catch (e) {
-                }
+                }*/
                 // 3.拿到搜索结果，提交
-                if (searchResult != "") {
+                if (remoteRule.title.indexOf(key) != -1) {  // 用indexOf好像会快一点？正则性能不敢恭维啊~
                     d.push({
                         title: remoteRule.title,
                         url: "https://baidu.com#" + remoteRule.rule,
