@@ -160,6 +160,13 @@ if (depotStatusFile != "") {
     eval("depotStatus=" + depotStatusFile);
 }
 
+var depotRulesStatus = {
+    updateNum: 0,
+    noImportNum: 0,
+    ignoreNum: 0,
+    unknownTypeNum: 0
+};
+
 function getRuleNoSymbols(rule, symbolList) {
     if (settings.needDelSymbol != true) return rule;
     var ruleTemp = rule;
@@ -260,10 +267,44 @@ function isInRulesWithMapping(rules, rule) {
 }
 
 var desc = function (rules, rule) {
+    if (rule != null && rule.version < 0) {
+        depotRulesStatus.unknownTypeNum += 1;
+        return "仓库无法检测该规则类型，请‘‘看规则更新时间’’";
+    }
     if (isInRulesWithMapping(rules, rule) == true || isInArray(rules, rule) == true) {
-        return rule.oldVersion != null && rule.oldVersion < rule.version ? ("‘‘有新版本：" + rule.version + "’’，点击导入新版本") + ("<br><br>[更新日志] " + (rule.updateText == null ? "无" : rule.updateText) + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "")) : rule.oldVersion > rule.version ? "‘‘喵？为啥你的规则版本比我还高？’’" : "当前规则已是最新版，点击跳到规则页" + (rule.tips != null && rule.tips != "" ? "\n\nTips: " + rule.tips : "");
+        if (rule.oldVersion != null && rule.oldVersion < rule.version) {
+            depotRulesStatus.updateNum += 1;
+            return ("‘‘有新版本：" + rule.version + "’’，点击导入新版本")
+                + (
+                    "<br><br>[更新日志] "
+                    + (
+                        rule.updateText == null ?
+                            "无"
+                            : rule.updateText
+                    )
+                    + (
+                        rule.tips != null && rule.tips != "" ?
+                            "<br><br>Tips: " + rule.tips
+                            : ""
+                    ));
+        } else {
+            return rule.oldVersion > rule.version ?
+                "‘‘喵？为啥你的规则版本比我还高？’’"
+                : "当前规则已是最新版，点击跳到规则页"
+                + (
+                    rule.tips != null && rule.tips != "" ?
+                        "\n\nTips: " + rule.tips
+                        : ""
+                );
+        }
     } else {
-        return "‘‘你尚未导入该规则’’，点击导入" + (rule.tips != null && rule.tips != "" ? "<br><br>Tips: " + rule.tips : "");
+        depotRulesStatus.noImportNum += 1;
+        return "‘‘你尚未导入该规则’’，点击导入"
+            + (
+                rule.tips != null && rule.tips != "" ?
+                    "<br><br>Tips: " + rule.tips :
+                    ""
+            );
     }
 };
 
@@ -485,24 +526,49 @@ if (remoteRules.length == 0) {
 
     remoteRules = mergeSort(remoteRules);
 
-    if (settings.noRulesNum != true && settings.hideAll != true)
-        d.push({
-            title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则<b/>",
-            col_type: "text_1"
-        });
-
+    var showRuleList = [];
+    // setError(JSON.stringify(remoteRules));
     for (var i = 0; i < remoteRules.length; i++) {
         var j = remoteRules[i];
         var ruleWithMapping = getRuleInRulesWithMapping(remoteRules, j);
         if (ruleWithMapping != null && getRuleInRulesWithMapping(myRules, j)) j = ruleWithMapping;
         var r = {};
-        if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
-        r.desc = (settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
-        r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ? j.mappingTitle : j.title;
-        r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
+        if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > settings.showFullTextMax)
+            r.col_type = settings.overMaxShowType;
+        if ((settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version)) {
+            depotRulesStatus.ignoreNum += 1;
+            r.desc = "该规则已忽略本次更新";
+        } else {
+            r.desc = desc(myRules, j);
+        }
+        r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ?
+            j.mappingTitle
+            : j.title;
+        r.url = j.version < 0 ?
+            j.rule || ""
+            : isInArray(myRules, j) || j.isMapped == true ?
+                (j.oldVersion != null && j.oldVersion < j.version ?
+                    (j.rule || "")
+                    : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ?
+                        j.localTitle
+                        : j.title)))
+                : (j.rule || "");
         //r.content = j.updateText;
-        d.push(r);
+        showRuleList.push(r);
     }
+
+    if (settings.noRulesNum != true && settings.hideAll != true)
+        d.push({
+            title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
+                " ("
+                + "更新:‘‘" + depotRulesStatus.updateNum
+                + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
+                + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
+                + "’’)",
+            col_type: "text_1",
+        });
+
+    while (showRuleList.length) d.push(showRuleList.shift())
 }
 
 res.data = d;
