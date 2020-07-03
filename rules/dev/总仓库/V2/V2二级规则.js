@@ -314,8 +314,7 @@ if (getUrl().indexOf("rule://") != -1) {
 
     // 原始方法，比较耗时
     function isInArray(rules, rule) {
-        if (getRuleInArray(rules, rule) != null) return true;
-        else return false;
+        return getRuleInArray(rules, rule) != null;
     }
 
     function isIgnoreUpdateRule(rule) {
@@ -507,6 +506,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                 var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
+                                // 全名映射
                                 if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
                                     localRule.mappingTitle = remoteRuleMappingTitle;
                                     remoteRule.mappingTitle = remoteRuleMappingTitle;
@@ -550,6 +550,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                 var ruleMapping = settings.rulesMapping[k];
                                 var localRuleMappingTitle = ruleMapping[0].title;
                                 var remoteRuleMappingTitle = ruleMapping[1].title;
+                                // 全名映射
                                 if (localRule.title == localRuleMappingTitle && remoteRule.title == remoteRuleMappingTitle && ruleMapping[2].matchAll == true) {
                                     localRule.mappingTitle = remoteRuleMappingTitle;
                                     remoteRule.mappingTitle = remoteRuleMappingTitle;
