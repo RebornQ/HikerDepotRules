@@ -51,6 +51,8 @@ if (key != null && key != "") {
     Array.prototype.push.apply(settings.authorList, remoteAuthorList);
     if (settings.authorListBottom.length != 0) Array.prototype.push.apply(settings.authorList, settings.authorListBottom);
 
+    // 空间换时间, n^2->2n？虽然Array.prototype.push.apply可能也是一个n？（体验上没感觉快多少，毕竟那个fetch太多了...）
+    var mRemoteRules = [];
     // 1.拿到仓库
     for (var i = 0; i < settings.authorList.length; i++) {
         var authorList = settings.authorList[i];
@@ -81,8 +83,8 @@ if (key != null && key != "") {
             var remoteFilenameJS = authorList.match(/remoteFilename=.[\s\S]*?'/) + ";";
             eval(remoteFilenameJS);
             if (remoteFilename == null) {
+                remoteFilename = "update.json";
             }
-            remoteFilename = "update.json";
             path = remoteFilename;
             // setError(remoteFilename)
             // API链接参考：https://gitee.com/api/v5/repos/{{owner}}/{{repo}}/contents/{{path}}?access_token=****
@@ -94,52 +96,49 @@ if (key != null && key != "") {
             // var remoteHome = "https://gitee.com/" + owner + "/" + repo + "/blob/master/update.json";
         }
 
-        var remoteRules = [];
         // var remoteUrl = remoteApiHome + encodeURIComponent(author) + "/" + remoteFilename;
         var remoteSource = fetch(remoteUrl, {});
         // setError(remoteUrl);
         try {
             eval("remoteSource=" + remoteSource);
             if (apiType == "0") {
-                remoteRules = remoteSource;
+                Array.prototype.push.apply(mRemoteRules, remoteSource);
             } else if (apiType == "1") {
-                eval("remoteRules=" + base64Decode(remoteSource.content));
+                eval("var remoteRules=" + base64Decode(remoteSource.content));
             }
             if (remoteRules.data != null) {
-                remoteRules = remoteRules.data;
+                Array.prototype.push.apply(mRemoteRules, remoteRules.data);
             }
         }catch (e) {
         }
-
-        // 2.拿到单个仓库的规则列表
-        if (remoteRules.length != 0) {
-            // 换个锤子的二分法，一定要遍历所有数据的，这样顶多是O(1/2 n)，忽略常数还是O(n)，确实会快一丢丢，空间换时间的结果
-            var left = 0;
-            var right = remoteRules.length - 1;
-            while (left <= right) {
-                var remoteRuleLeft = remoteRules[left];
-                var remoteRuleRight = remoteRules[right];
-                if (regExp.test(remoteRuleLeft.title) == true) {
-                    d.push({
-                        title: remoteRuleLeft.title,
-                        url: "https://baidu.com#" + remoteRuleLeft.rule,
-                        desc: remoteRuleLeft.author,
-                        content: "云端版本：" + remoteRuleLeft.version
-                    });
-                }
-                if (regExp.test(remoteRuleRight.title) == true) {
-                    d.push({
-                        title: remoteRuleRight.title,
-                        url: "https://baidu.com#" + remoteRuleRight.rule,
-                        desc: remoteRuleRight.author,
-                        content: "云端版本：" + remoteRuleRight.version
-                    });
-                }
-                left++;
-                right--;
+    }
+    // 2.拿到单个仓库的规则列表
+    if (mRemoteRules.length != 0) {
+        // 换个锤子的二分法，一定要遍历所有数据的，这样顶多是O(1/2 n)，忽略常数还是O(n)，确实会快一丢丢，空间换时间的结果
+        var left = 0;
+        var right = mRemoteRules.length - 1;
+        while (left <= right) {
+            var remoteRuleLeft = mRemoteRules[left];
+            var remoteRuleRight = mRemoteRules[right];
+            if (regExp.test(remoteRuleLeft.title) == true) {
+                d.push({
+                    title: remoteRuleLeft.title,
+                    url: "https://baidu.com#" + remoteRuleLeft.rule,
+                    desc: remoteRuleLeft.author,
+                    content: "云端版本：" + remoteRuleLeft.version
+                });
             }
+            if (regExp.test(remoteRuleRight.title) == true) {
+                d.push({
+                    title: remoteRuleRight.title,
+                    url: "https://baidu.com#" + remoteRuleRight.rule,
+                    desc: remoteRuleRight.author,
+                    content: "云端版本：" + remoteRuleRight.version
+                });
+            }
+            left++;
+            right--;
         }
-
     }
 }
 
