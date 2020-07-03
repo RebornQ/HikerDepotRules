@@ -137,8 +137,8 @@ if (apiType == "0") {
     var remoteFilenameJS = authorList.match(/remoteFilename=.[\s\S]*?'/) + ";";
     eval(remoteFilenameJS);
     if (remoteFilename == null) {
+        remoteFilename = "update.json";
     }
-    remoteFilename = "update.json";
     path = remoteFilename;
     // setError(remoteFilename)
     // API链接参考：https://gitee.com/api/v5/repos/{{owner}}/{{repo}}/contents/{{path}}?access_token=****
