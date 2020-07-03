@@ -23,77 +23,80 @@ var res = {};
 var d = [];
 var mRule = JSON.parse(getRule());
 
-// 设置 true 一键净化，除了规则和仓库通知，啥也不要
-var hideAll = false;
-// 规则数量显示开关，不需要显示请设置为true
-var noRulesNum = false;
-// 是否允许超过一定规则数后改变显示样式，默认不开启，要开始请设置为 true
-var needChangeShowType = false;
-// 设置最大显示完整文本的规则数，大于设置值则显示为按钮样式(默认 text_2)
-var showFullTextMax = 10;
-// 设置超过允许显示完整文本的规则数后显示的样式
-var overMaxShowType = "text_2";
+var settings = {
+    // 设置 true 一键净化，除了规则和仓库通知，啥也不要
+    hideAll: false,
+    // 规则数量显示开关，不需要显示请设置为true
+    noRulesNum: false,
+    // 是否允许超过一定规则数后改变显示样式，默认不开启，要开始请设置为 true
+    needChangeShowType: false,
+    // 设置最大显示完整文本的规则数，大于设置值则显示为按钮样式(默认 text_2)
+    showFullTextMax: 10,
+    // 设置超过允许显示完整文本的规则数后显示的样式
+    overMaxShowType: "text_2",
+    /**
+     * 规则映射列表
+     * 左本地，右远端，本地映射为远端，达到替换内容的目的
+     * （注意，程序逻辑为先映射后执行下面的删除标记）
+     */
+    rulesMapping: [
+        // [{"title": "嗨哆咪", "author": "发粪涂墙"}, {"title": "嗨哚咪影视", "author": "发粪涂墙"}, {"matchAll": true}],
+        // [{"title": "预告片", "author": "Reborn"}, {"title": "预告片(?=•Re)", "author": "Reborn"}],
+        // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}, {"matchAll": true}],
+        // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
+        // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
+    ],
+    // 云端规则映射列表链接，格式是JSON数组，请自己设置
+    remoteRulesMappingUrl: "",
 
-/**
- * 规则映射列表
- * 左本地，右远端，本地映射为远端，达到替换内容的目的
- * （注意，程序逻辑为先映射后执行下面的删除标记）
- */
-var rulesMapping = [
-    // [{"title": "预告片•T", "author": "Reborn"}, {"title": "预告片•Re", "author": "Reborn"}],
-    // [{"title": ".*?(?=•T)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}],
-    // [{"title": ".*?(?=•B)", "author": "Reborn"}, {"title": ".*?(?=•Re)", "author": "Reborn"}]
-];
-// 云端规则映射列表链接，格式是JSON数组，请自己设置
-var remoteRulesMappingUrl = "";
+    // 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
+    needDelSymbol: true,
+    // 自行添加要被删掉的标记
+    symbols: ["标记1", "标记2"],
 
-// 入戏开关？（滑稽）// 删除开关，不需要删除请设置为false
-var needDelSymbol = true;
-// 自行添加要被删掉的标记
-var symbols = ["标记1", "标记2"];
+    // 隐藏开关，不需要隐藏请设置为false
+    needHideRule: true,
+    // 自行添加要隐藏的标记，格式为：[标记名]
+    hideSymbols: ["[模板]", "[未完成]"],
 
-// 隐藏开关，不需要隐藏请设置为false
-var needHideRule = true;
-// 自行添加要隐藏的标记，格式为：[标记名]
-var hideSymbols = ["[模板]", "[未完成]"];
+    // 若需要关闭忽略本次更新请设置为true
+    noIgnoreUpdate: false,
+    // 本地忽略更新列表，
+    // 内容模板为 {title: "规则名", author: "规则作者"}
+    ignoreUpdateRuleList: [
+        // {title: "预告片•Re", author: "Reborn"},
+    ],
+    // 云端忽略更新列表，格式是JSON数组，请自己设置
+    remoteIgnoreListUrl: "",
+    // 参考链接：
+    // https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
+    // https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
 
-// 若需要关闭忽略本次更新请设置为true
-var noIgnoreUpdate = false;
-// 本地忽略更新列表，
-// 内容模板为 {title: "规则名", author: "规则作者"}
-var ignoreUpdateRuleList = [
-// {title: "预告片•Re", author: "Reborn"},
-];
-// 云端忽略更新列表，格式是JSON数组，请自己设置
-var remoteIgnoreListUrl = "";
+    // 为所有分类添加该分类仓库更新功能
+    // 需要像总仓库一样单独用一个json管理，自行填入地址
+    remoteDepotRuleUrl: "",
+    // 若不需要更新则关闭
+    showUpdateErrorTips: false,
+};
 
-// 参考链接：
-// https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
-// https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
-
-// 为所有分类添加该分类仓库更新功能
-// 需要像总仓库一样单独用一个json管理，自行填入地址
-var remoteDepotRuleUrl = "";
-// 若不需要更新则关闭
-var showUpdateErrorTips = false;
 // 仓库状态缓存文件地址
 var statusCacheFile = "hiker://files/" + mRule.title + "_" + mRule.author + ".json";
 // 举例 hiker://files/depotStatus.json
 
 var remoteIgnoreList = [];
 try {
-    eval("remoteIgnoreList=" + fetch(remoteIgnoreListUrl, {}));
+    eval("remoteIgnoreList=" + fetch(settings.remoteIgnoreListUrl, {}));
 } catch (e) {
 }
-Array.prototype.push.apply(ignoreUpdateRuleList, remoteIgnoreList);
+Array.prototype.push.apply(settings.ignoreUpdateRuleList, remoteIgnoreList);
 // setError(JSON.stringify(ignoreUpdateRuleList));
 
 var remoteRulesMapping = [];
 try {
-    eval("remoteRulesMapping=" + fetch(remoteRulesMappingUrl, {}));
+    eval("remoteRulesMapping=" + fetch(settings.remoteRulesMappingUrl, {}));
 } catch (e) {
 }
-Array.prototype.push.apply(rulesMapping, remoteRulesMapping);
+Array.prototype.push.apply(settings.rulesMapping, remoteRulesMapping);
 // setError(JSON.stringify(rulesMapping));
 
 /**
@@ -157,7 +160,7 @@ if (depotStatusFile != "") {
 }
 
 function getRuleNoSymbols(rule, symbolList) {
-    if (needDelSymbol != true) return rule;
+    if (settings.needDelSymbol != true) return rule;
     var ruleTemp = rule;
     for (var i = 0; i < symbolList.length; i++) {
         var symbolReg = new RegExp(symbolList[i], "g");
@@ -168,11 +171,11 @@ function getRuleNoSymbols(rule, symbolList) {
 }
 
 function isHideRule(rule) {
-    if (needHideRule != true) return false;
+    if (settings.needHideRule != true) return false;
     // if (hideSymbols.length == 0) return false;
     var ruleTemp = rule;
-    for (var i = 0; i < hideSymbols.length; i++) {
-        if (ruleTemp.title.indexOf(hideSymbols[i]) != -1) return true;
+    for (var i = 0; i < settings.hideSymbols.length; i++) {
+        if (ruleTemp.title.indexOf(settings.hideSymbols[i]) != -1) return true;
     }
     return false;
 }
@@ -186,7 +189,7 @@ function getRuleInArray(rules, rule) {
 }
 
 function isIgnoreUpdateRule(rule) {
-    if (isInArray(ignoreUpdateRuleList, rule) == true) {
+    if (isInArray(settings.ignoreUpdateRuleList, rule) == true) {
         var cacheIgnoreRule = getRuleInArray(depotStatus.ignoreUpdateRuleList, rule);
         if (cacheIgnoreRule == null) {
             if (depotStatus.ignoreUpdateRuleList == null) depotStatus.ignoreUpdateRuleList = [];
@@ -220,7 +223,7 @@ var myRules = [];
 for (var i = 0; i < rules.length; i++) {
     var rule = rules[i];
     if (rule.author == author) {
-        myRules.push(getRuleNoSymbols(rule, symbols));
+        myRules.push(getRuleNoSymbols(rule, settings.symbols));
     }
 }
 // setError(JSON.stringify(myRules));
@@ -265,7 +268,7 @@ var desc = function (rules, rule) {
 
 try {
     var remoteDepotRule = {};
-    eval("remoteDepotRule=" + fetch(remoteDepotRuleUrl, {}));
+    eval("remoteDepotRule=" + fetch(settings.remoteDepotRuleUrl, {}));
     var localDepotRule = JSON.parse(getRule());
     remoteDepotRule.oldVersion = localDepotRule.version;
 //setError(JSON.stringify(localDepotRule));
@@ -281,7 +284,7 @@ try {
         });
     }
 } catch (e) {
-    if (showUpdateErrorTips == true)
+    if (settings.showUpdateErrorTips == true)
         d.push({
             title: "‘‘总仓库更新程序已损坏’’",
             desc: "请联系 " + mRule.author + " 修复",
@@ -297,7 +300,7 @@ try {
     eval("remoteSource=" + remoteSource);
     if (apiType == "0") {
         remoteRules = remoteSource;
-    } else if (apiType == "1"){
+    } else if (apiType == "1") {
         eval("remoteRules=" + base64Decode(remoteSource.content));
     }
     if (remoteRules.data != null) {
@@ -351,9 +354,9 @@ if (remoteRules.length == 0) {
                     continue;
                 }
                 setIgnoreUpdateRule(remoteRule);
-                for (var k = 0; k < rulesMapping.length; k++) {
+                for (var k = 0; k < settings.rulesMapping.length; k++) {
                     try {
-                        var ruleMapping = rulesMapping[k];
+                        var ruleMapping = settings.rulesMapping[k];
                         var localRuleMappingTitle = ruleMapping[0].title;
                         var titleRegex = new RegExp(localRuleMappingTitle, "g");
                         localRule.mappingTitle = localRule.title.match(titleRegex)[0];
@@ -388,9 +391,9 @@ if (remoteRules.length == 0) {
             setIgnoreUpdateRule(remoteRule);
             for (var j = 0; j < myRules.length; j++) {
                 var localRule = myRules[j];
-                for (var k = 0; k < rulesMapping.length; k++) {
+                for (var k = 0; k < settings.rulesMapping.length; k++) {
                     try {
-                        var ruleMapping = rulesMapping[k];
+                        var ruleMapping = settings.rulesMapping[k];
                         var localRuleMappingTitle = ruleMapping[0].title;
                         var titleRegex = new RegExp(localRuleMappingTitle);
                         localRule.mappingTitle = localRule.title.match(titleRegex)[0];
@@ -467,7 +470,7 @@ if (remoteRules.length == 0) {
 
     remoteRules = mergeSort(remoteRules);
 
-    if (noRulesNum != true && hideAll != true)
+    if (settings.noRulesNum != true && settings.hideAll != true)
         d.push({
             title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则<b/>",
             col_type: "text_1"
@@ -478,8 +481,8 @@ if (remoteRules.length == 0) {
         var ruleWithMapping = getRuleInRulesWithMapping(remoteRules, j);
         if (ruleWithMapping != null && getRuleInRulesWithMapping(myRules, j)) j = ruleWithMapping;
         var r = {};
-        if (needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
-        r.desc = (noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
+        if (settings.needChangeShowType == true && j.oldVersion != null && j.oldVersion >= j.version && remoteRules.length > showFullTextMax) r.col_type = overMaxShowType;
+        r.desc = (settings.noIgnoreUpdate != true && j.isIgnoreUpdate == true) && (j.oldVersion == null || j.oldVersion < j.version) ? "该规则已忽略本次更新" : desc(myRules, j);
         r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ? j.mappingTitle : j.title;
         r.url = isInArray(myRules, j) || j.isMapped == true ? (j.oldVersion != null && j.oldVersion < j.version ? (j.rule || "") : ("hiker://home@" + (j.localTitle != null && j.localTitle != "" ? j.localTitle : j.title))) : (j.rule || "");
         //r.content = j.updateText;
