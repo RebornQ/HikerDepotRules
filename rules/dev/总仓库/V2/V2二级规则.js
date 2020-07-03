@@ -252,6 +252,12 @@ if (getUrl().indexOf("rule://") != -1) {
         url: "https://gitee.com/qiusunshine233/hikerView/blob/master/ruleversion/CHANGELOG_DEPOTRULE_V2.md",
         col_type: "pic_1"
     });
+    d.push({
+        title: "总仓库开发文档入口(点击可查看完整文档)",
+        desc: "这是专门给大佬们写的，文笔太差了，觉得写得乱还请体谅一下🙈。有不懂的地方可以联系我，溜了溜了～",
+        url: "https://gitee.com/Reborn_0/HikerRulesDepot/blob/master/README.md",
+        col_type: "pic_1"
+    });
 } else if (getUrl().indexOf("document=") != -1) {
     var documentUrl = null;
     documentUrl = getUrl().split("#")[1].replace("document=", "");

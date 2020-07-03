@@ -206,7 +206,7 @@ if (depotStatus.showTips != false) {
                 desc: "【更新日志】\n更多完整日志请在里面点击进入原网页查看"
             });
         } else {
-            d[0].desc = "‘‘点击可查看更新日志’’<br>" + d[0].desc;
+            d[0].desc = "‘‘点击可查看更新日志和开发文档’’<br>" + d[0].desc;
             d[0].url = "https://gitee.com/qiusunshine233/hikerView/blob/master/ruleversion/CHANGELOG_DEPOTRULE_V2.md#updateText=" + remoteDepotRule.updateText
         }
     } catch (e) {
