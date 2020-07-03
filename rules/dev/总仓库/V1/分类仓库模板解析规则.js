@@ -24,6 +24,8 @@ var d = [];
 var mRule = JSON.parse(getRule());
 
 var settings = {
+    // 压缩文本开关，即规则 提示/更新日志 不空行，以后可能还有其他
+    compressText: false,
     // 设置 true 一键净化，除了规则和仓库通知，啥也不要
     hideAll: false,
     // 规则数量显示开关，不需要显示请设置为true
@@ -167,6 +169,9 @@ var depotRulesStatus = {
     unknownTypeNum: 0
 };
 
+var enterText = "\n\n";
+if (settings.compressText == true) enterText = "\n";
+
 function getRuleNoSymbols(rule, symbolList) {
     if (settings.needDelSymbol != true) return rule;
     var ruleTemp = rule;
@@ -276,7 +281,7 @@ var desc = function (rules, rule) {
             depotRulesStatus.updateNum += 1;
             return ("‘‘有新版本：" + rule.version + "’’，点击导入新版本")
                 + (
-                    "<br><br>[更新日志] "
+                    enterText + "[更新日志] "
                     + (
                         rule.updateText == null ?
                             "无"
@@ -284,7 +289,7 @@ var desc = function (rules, rule) {
                     )
                     + (
                         rule.tips != null && rule.tips != "" ?
-                            "<br><br>Tips: " + rule.tips
+                            enterText + "Tips: " + rule.tips
                             : ""
                     ));
         } else {
@@ -293,7 +298,7 @@ var desc = function (rules, rule) {
                 : "当前规则已是最新版，点击跳到规则页"
                 + (
                     rule.tips != null && rule.tips != "" ?
-                        "\n\nTips: " + rule.tips
+                        enterText + "Tips: " + rule.tips
                         : ""
                 );
         }
@@ -302,7 +307,7 @@ var desc = function (rules, rule) {
         return "‘‘你尚未导入该规则’’，点击导入"
             + (
                 rule.tips != null && rule.tips != "" ?
-                    "<br><br>Tips: " + rule.tips :
+                    enterText + "Tips: " + rule.tips :
                     ""
             );
     }
