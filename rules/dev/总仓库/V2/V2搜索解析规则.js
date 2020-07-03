@@ -23,7 +23,7 @@ var {
 var res = {};
 var d = [];
 var key = getUrl().split("#")[1];
-key = "影视";
+// key = "影视";
 
 if (key != null && key != "") {
     var regExp = new RegExp("[^]*"+key+"[^]*");
@@ -45,7 +45,7 @@ if (key != null && key != "") {
     // 获取搜索链接中的**，然后循环遍历每一个仓库的规则，正则模糊匹配到不为空的就加入搜索结果
     var remoteAuthorList = [];
     try {
-        eval("remoteAuthorList=" + await fetch(settings.remoteAuthorListUrl, {}));
+        eval("remoteAuthorList=" + fetch(settings.remoteAuthorListUrl, {}));
     } catch (e) {
     }
     Array.prototype.push.apply(settings.authorList, remoteAuthorList);
@@ -96,7 +96,7 @@ if (key != null && key != "") {
 
         var remoteRules = [];
         // var remoteUrl = remoteApiHome + encodeURIComponent(author) + "/" + remoteFilename;
-        var remoteSource = await fetch(remoteUrl, {});
+        var remoteSource = fetch(remoteUrl, {});
         // setError(remoteUrl);
         try {
             eval("remoteSource=" + remoteSource);
@@ -113,24 +113,30 @@ if (key != null && key != "") {
 
         // 2.拿到单个仓库的规则列表
         if (remoteRules.length != 0) {
-            for (var j = 0; j < remoteRules.length; j++) {
-                // var searchResult = "";
-                var remoteRule = remoteRules[j];
-                /*try {
-                    searchResult = remoteRule.title.match(regExp)[0];
-                } catch (e) {
-                }*/
-                // 3.拿到搜索结果，提交
-                if (regExp.test(remoteRule.title) == true) {
-                    // 用indexOf好像会快一点？正则性能不敢恭维啊~
-                    // 据这篇文章 https://www.jianshu.com/p/4cd4f74a0b20 测试是string.test比indexOf还快
+            // 换个锤子的二分法，一定要遍历所有数据的，这样顶多是O(1/2 n)，忽略常数还是O(n)，确实会快一丢丢，空间换时间的结果
+            var left = 0;
+            var right = remoteRules.length - 1;
+            while (left <= right) {
+                var remoteRuleLeft = remoteRules[left];
+                var remoteRuleRight = remoteRules[right];
+                if (regExp.test(remoteRuleLeft.title) == true) {
                     d.push({
-                        title: remoteRule.title,
-                        url: "https://baidu.com#" + remoteRule.rule,
-                        desc: remoteRule.author,
-                        content: "云端版本：" + remoteRule.version
-                    })
+                        title: remoteRuleLeft.title,
+                        url: "https://baidu.com#" + remoteRuleLeft.rule,
+                        desc: remoteRuleLeft.author,
+                        content: "云端版本：" + remoteRuleLeft.version
+                    });
                 }
+                if (regExp.test(remoteRuleRight.title) == true) {
+                    d.push({
+                        title: remoteRuleRight.title,
+                        url: "https://baidu.com#" + remoteRuleRight.rule,
+                        desc: remoteRuleRight.author,
+                        content: "云端版本：" + remoteRuleRight.version
+                    });
+                }
+                left++;
+                right--;
             }
         }
 
