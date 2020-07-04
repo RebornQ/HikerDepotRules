@@ -101,13 +101,15 @@ if (key != null && key != "") {
         // setError(remoteUrl);
         try {
             eval("remoteSource=" + remoteSource);
+            var remoteRules = remoteSource;
             if (apiType == "0") {
-                Array.prototype.push.apply(mRemoteRules, remoteSource);
             } else if (apiType == "1") {
-                eval("var remoteRules=" + base64Decode(remoteSource.content));
+                eval("remoteRules=" + base64Decode(remoteSource.content));
             }
             if (remoteRules.data != null) {
                 Array.prototype.push.apply(mRemoteRules, remoteRules.data);
+            } else {
+                Array.prototype.push.apply(mRemoteRules, remoteSource);
             }
         }catch (e) {
         }
