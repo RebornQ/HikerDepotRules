@@ -286,30 +286,15 @@ var desc = function (rules, rule) {
                         rule.updateText == null ?
                             "无"
                             : rule.updateText
-                    )
-                    + (
-                        rule.tips != null && rule.tips != "" ?
-                            enterText + "Tips: " + rule.tips
-                            : ""
                     ));
         } else {
             return rule.oldVersion > rule.version ?
                 "‘‘喵？为啥你的规则版本比我还高？’’"
-                : "当前规则已是最新版，点击跳到规则页"
-                + (
-                    rule.tips != null && rule.tips != "" ?
-                        enterText + "Tips: " + rule.tips
-                        : ""
-                );
+                : "当前规则已是最新版，点击跳到规则页";
         }
     } else {
         depotRulesStatus.noImportNum += 1;
-        return "‘‘你尚未导入该规则’’，点击导入"
-            + (
-                rule.tips != null && rule.tips != "" ?
-                    enterText + "Tips: " + rule.tips :
-                    ""
-            );
+        return "‘‘你尚未导入该规则’’，点击导入";
     }
 };
 
@@ -546,6 +531,11 @@ if (remoteRules.length == 0) {
         } else {
             r.desc = desc(myRules, j);
         }
+        r.desc = r.desc + (
+            j.tips != null && j.tips != "" ?
+                enterText + "Tips: " + j.tips :
+                ""
+        );
         r.title = j.mappingTitle != null && j.mappingTitle != "" && j.isMapped == true ?
             j.mappingTitle
             : j.title;
