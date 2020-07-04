@@ -24,6 +24,16 @@ var res = {};
 var d = [];
 var key = getUrl().split("#")[1];
 // key = "影视";
+var page = 1;
+try {
+    page = parseInt(getUrl().split("#")[2]);
+}
+catch (e) { }
+var pageSize = page * 5;
+/*d.push({
+    title: "page: " + page,
+    desc: "pageSize: "+ pageSize + " pageAdd: "+ pageAdd
+});*/
 
 if (key != null && key != "") {
     var regExp = new RegExp("[^]*"+key+"[^]*");
@@ -31,13 +41,13 @@ if (key != null && key != "") {
     var settings = {
         // 在这里添加仓库配置，可使本地添加的仓库置顶
         authorList: [
-            "[例子]置顶私人仓库@@Reborn_0@@HikerRulesPrivacy@@access_token='****'",
-            "[例子]自定义文件名@@Reborn_0@@HikerRulesDepot@@remoteFilename='update_1.json'"
+            // "[例子]置顶私人仓库@@Reborn_0@@HikerRulesPrivacy@@access_token='****'",
+            // "[例子]自定义文件名@@Reborn_0@@HikerRulesDepot@@remoteFilename='update_1.json'"
         ],
         remoteAuthorListUrl: "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/authorList.json",
         // 在这里添加仓库配置，可使本地添加的仓库置底
         authorListBottom: [
-            "[例子]置底本地仓库@@Reborn_0@@HikerRulesPrivacy"
+            // "[例子]置底本地仓库@@Reborn_0@@HikerRulesPrivacy"
         ],
     };
 
@@ -54,7 +64,8 @@ if (key != null && key != "") {
     // 空间换时间, n^2->2n？虽然Array.prototype.push.apply可能也是一个n？（体验上没感觉快多少，毕竟那个fetch太多了...）
     var mRemoteRules = [];
     // 1.拿到仓库
-    for (var i = 0; i < settings.authorList.length; i++) {
+    for (var i = (page-1) * 5; i < settings.authorList.length && i < pageSize; i++) {
+        // if (i < pageSize) break;
         var authorList = settings.authorList[i];
         var authorAndOwnerAndProject = authorList.split("@@");
         var author = authorAndOwnerAndProject[0];
@@ -142,6 +153,23 @@ if (key != null && key != "") {
             right--;
         }
     }
+}
+
+if((page) * 5 < settings.authorList.length) {
+    if(d.length == 0) {
+        d.push({
+            title: "没加载到东西？不要紧，上滑可能有惊喜哦！",
+            desc: "PS: 只要没显示最后一页就还有希望！"
+        });
+    } else {
+        d.push({
+            title: "未到最后一页，请继续上滑加载更多。"
+        });
+    }
+} else {
+    d.push({
+        title: "已到最后一页"
+    });
 }
 
 // setError(JSON.stringify(d));
