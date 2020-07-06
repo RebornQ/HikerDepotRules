@@ -97,11 +97,6 @@ if (depotStatus.showTips != false) {
         writeDepotStatusToFile(depotStatus);
     }
 
-    if (mRule.version != depotStatus.version) {
-        depotStatus.version = mRule.version;
-        writeDepotStatusToFile(depotStatus);
-    }
-
     var desc = function (rule) {
         return rule.oldVersion != null && rule.oldVersion < rule.version ? ("‘‘有新版本：" + rule.version + "’’，点击导入新版本") : rule.oldVersion > rule.version ? "‘‘喵？为啥你的规则版本比我还高？’’" : "当前规则已是最新版，点击跳到规则页";
     };
@@ -110,13 +105,13 @@ if (depotStatus.showTips != false) {
     try {
         var remoteDepotRule = {};
         eval("remoteDepotRule=" + fetch(settings.remoteDepotRuleUrl, {}));
-        var localDepotRule = JSON.parse(getRule());
-        remoteDepotRule.oldVersion = localDepotRule.version;
+        // var localDepotRule = JSON.parse(getRule());
+        remoteDepotRule.oldVersion = depotStatus.version;
         //setError(JSON.stringify(localDepotRule));
         //setError(JSON.stringify(remoteDepotRule));
         if (remoteDepotRule.oldVersion < remoteDepotRule.version) {
             d.push({
-                title: remoteDepotRule.title + "\t" + desc(remoteDepotRule),
+                title: remoteDepotRule.title + "\t‘‘已更新完成’’",
                 url: "https://baidu.com#" + JSON.stringify(remoteDepotRule) || "",
                 col_type: "text_center_1",
                 desc: "【更新日志】\n更多完整日志请在里面点击进入原网页查看"
@@ -131,6 +126,11 @@ if (depotStatus.showTips != false) {
             desc: "请联系 " + mRule.author + " 修复",
             col_type: "text_center_1",
         });
+    }
+
+    if (mRule.version != depotStatus.version) {
+        depotStatus.version = mRule.version;
+        writeDepotStatusToFile(depotStatus);
     }
 
     for (var i = 0; i < settings.authorList.length; i++) {
