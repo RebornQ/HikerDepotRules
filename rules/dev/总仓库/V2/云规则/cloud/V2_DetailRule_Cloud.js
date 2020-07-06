@@ -531,8 +531,8 @@ if (getUrl().indexOf("rule://") != -1) {
 
             var importList = [];
             var updateList = [];
-            var importListFile = "hiker://files/tmp_importList.json";
-            var updateListFile = "hiker://files/tmp_updateList.json";
+            var importListFile = "hiker://files/tmp/tmp_importList.json";
+            var updateListFile = "hiker://files/tmp/tmp_updateList.json";
             function generateHomeRulesUrl(rules, filename) {
                 // 海阔视界，首页频道合集￥home_rule_url￥
                 var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
