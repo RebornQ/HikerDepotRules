@@ -82,24 +82,6 @@ if (depotStatus.showTips != false) {
     writeDepotStatusToFile(depotStatus);
 } else {
 
-    if (depotStatus.showEtc != false || mRule.version != depotStatus.version) {
-        depotStatus.showEtc = false;
-        writeDepotStatusToFile(depotStatus);
-    } else {
-        settings.hideSymbols.push("[例子]");
-    }
-
-    if (depotStatus.showDevDoc != false || mRule.version != depotStatus.version) {
-        d.push({
-            title: "【大佬通道】\n‘‘(仅显一次)’’",
-            desc: "‘‘点击查看V2总仓库开发文档’’\n规则里有永久显示开关可以自己去开",
-            url: "https://gitee.com/Reborn_0/HikerRulesDepot/blob/master/README.md#document=https://gitee.com/Reborn_0/HikerRulesDepot/blob/master/README.md",
-            col_type: "text_center_1"
-        });
-        depotStatus.showDevDoc = false;
-        writeDepotStatusToFile(depotStatus);
-    }
-
     var desc = function (rule) {
         return rule.oldVersion != null && rule.oldVersion < rule.version ? ("‘‘有新版本：" + rule.version + "’’，点击导入新版本") : rule.oldVersion > rule.version ? "‘‘喵？为啥你的规则版本比我还高？’’" : "当前规则已是最新版，点击跳到规则页";
     };
@@ -117,6 +99,25 @@ if (depotStatus.showTips != false) {
             remoteDepotRule.oldVersion = localDepotRule.version;
             //setError(JSON.stringify(localDepotRule));
         }
+
+        if (depotStatus.showEtc != false || mRule.version != depotStatus.version) {
+            depotStatus.showEtc = false;
+            writeDepotStatusToFile(depotStatus);
+        } else {
+            settings.hideSymbols.push("[例子]");
+        }
+
+        if (depotStatus.showDevDoc != false || mRule.version != depotStatus.version) {
+            d.push({
+                title: "【大佬通道】\n‘‘(仅显一次)’’",
+                desc: "‘‘点击查看V2总仓库开发文档’’\n规则里有永久显示开关可以自己去开",
+                url: "https://gitee.com/Reborn_0/HikerRulesDepot/blob/master/README.md#document=https://gitee.com/Reborn_0/HikerRulesDepot/blob/master/README.md",
+                col_type: "text_center_1"
+            });
+            depotStatus.showDevDoc = false;
+            writeDepotStatusToFile(depotStatus);
+        }
+
         if (remoteDepotRule.oldVersion < remoteDepotRule.version) {
             d.push({
                 title: remoteDepotRule.title + "\t" + (updateMode == 0 ? "‘‘已更新完成’’" : desc(remoteDepotRule)),
