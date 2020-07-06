@@ -110,6 +110,7 @@ if (depotStatus.showTips != false) {
         //setError(JSON.stringify(remoteDepotRule));
         if (updateMode == 0) {
             remoteDepotRule.oldVersion = depotStatus.version;
+            mRule.version = remoteDepotRule.version;
         } else if (updateMode == 1) {
             var localDepotRule = JSON.parse(getRule());
             remoteDepotRule.oldVersion = localDepotRule.version;
