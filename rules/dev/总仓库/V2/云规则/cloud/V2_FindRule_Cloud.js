@@ -123,7 +123,7 @@ if (depotStatus.showTips != false) {
                 title: remoteDepotRule.title + "\t" + (updateMode == 0 ? "‘‘已更新完成’’" : desc(remoteDepotRule)),
                 url: "https://baidu.com#" + JSON.stringify(remoteDepotRule) || "",
                 col_type: "text_center_1",
-                desc: "【更新日志】\n更多完整日志请在里面点击进入原网页查看"
+                desc: "【更新日志】\n更多完整日志(新功能)请在里面点击进入原网页查看"
             });
         } else {
             d[0].desc = "‘‘点击可查看更新日志和开发文档’’<br>" + d[0].desc;
