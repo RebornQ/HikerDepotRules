@@ -92,7 +92,7 @@ depotStatus.settingsRemoteFile = "";
 // 若需要永久显示提示，则取消注释
 // depotStatus.showSecondListTips = true;
 
-var fileUrl = "";
+var fileUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/V2_DetailRule_Cloud.js";
 eval(fetch(fileUrl, {}));
 
 res.data = d;

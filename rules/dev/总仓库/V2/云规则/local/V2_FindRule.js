@@ -62,7 +62,7 @@ depotStatus.settingsRemoteFile = "";
 // 若需要永久显示例子，则取消注释
 // depotStatus.showEtc = true;
 
-var fileUrl = "";
+var fileUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/V2_FindRule_Cloud.js";
 eval(fetch(fileUrl, {}));
 
 // setError(JSON.stringify(d));
