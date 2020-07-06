@@ -621,6 +621,23 @@ if (getUrl().indexOf("rule://") != -1) {
 
             remoteRules = mergeSort(remoteRules);
 
+            var ruleReg = new RegExp(/{[^]*/);
+            function getRuleInRemote(remoteRule) {
+                var remoteRuleRule = null;
+                try {
+                    eval("remoteRuleRule=" + base64Decode(remoteRule.rule.replace("rule://", "")).match(ruleReg)[0]);
+                } catch (e) { }
+                return remoteRuleRule;
+            }
+
+            var homeRules = [];
+            var updateList = [];
+            function generateHomeRulesUrl(rules) {
+                // 海阔视界，首页频道合集￥home_rule_url￥
+                var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
+                return "rule://" + base64Encode(base64Decode(homeRulesKey) + JSON.stringify(rules));
+            }
+
             var showRuleList = [];
             // setError(JSON.stringify(remoteRules));
             for (var i = 0; i < remoteRules.length; i++) {
@@ -655,9 +672,14 @@ if (getUrl().indexOf("rule://") != -1) {
                         : (j.rule || "");
                 //r.content = j.updateText;
                 showRuleList.push(r);
+
+                if (j.oldVersion != null && j.oldVersion < j.version) {
+                    updateList.push(getRuleInRemote(j));
+                }
+                homeRules.push(getRuleInRemote(j));
             }
 
-            if (settings.noRulesNum != true && settings.hideAll != true)
+            if (settings.noRulesNum != true && settings.hideAll != true){}
                 d.push({
                     title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
                         " ("
@@ -667,6 +689,22 @@ if (getUrl().indexOf("rule://") != -1) {
                         + "’’)",
                     col_type: "text_1",
                 });
+
+            if (updateList.length != 0) {
+                d.push({
+                    title: "““一键更新””\n(实验性功能)",
+                    url: generateHomeRulesUrl(updateList),
+                    col_type: "text_center_1",
+                });
+            }
+
+            if (homeRules.length != 0) {
+                d.push({
+                    title: "““一键导入””\n(实验性功能)",
+                    url: generateHomeRulesUrl(homeRules),
+                    col_type: "text_center_1",
+                });
+            }
 
             while (showRuleList.length) d.push(showRuleList.shift())
 
