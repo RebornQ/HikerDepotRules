@@ -511,6 +511,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
+                                    remoteRule.group = localRule.group;
                                     break;
                                 }
                             } catch (e) {
@@ -518,6 +519,7 @@ if (getUrl().indexOf("rule://") != -1) {
                         }
                         if (localRule.title == remoteRule.title) {
                             remoteRule.oldVersion = localRule.version;
+                            remoteRule.group = localRule.group;
                             //remoteRules[j].rule=myRules[i].rule;
                             //remoteRules[j].desc=myRules[i].desc;
                             break
@@ -555,6 +557,7 @@ if (getUrl().indexOf("rule://") != -1) {
                                     remoteRule.localTitle = localRule.title;
                                     remoteRule.isMapped = true;
                                     remoteRule.oldVersion = localRule.version;
+                                    remoteRule.group = localRule.group;
                                     break;
                                 }
                             } catch (e) {
@@ -563,6 +566,7 @@ if (getUrl().indexOf("rule://") != -1) {
 
                         if (localRule.title == remoteRule.title) {
                             remoteRule.oldVersion = localRule.version;
+                            remoteRule.group = localRule.group;
                             //remoteRules[i].rule=myRules[j].rule;
                             //remoteRules[i].desc=myRules[j].desc;
                             break
@@ -626,16 +630,24 @@ if (getUrl().indexOf("rule://") != -1) {
                 var remoteRuleRule = null;
                 try {
                     eval("remoteRuleRule=" + base64Decode(remoteRule.rule.replace("rule://", "")).match(ruleReg)[0]);
+                    if(remoteRule.group != null && remoteRuleRule != null) {
+                        remoteRuleRule.group = remoteRule.group;
+                    }
                 } catch (e) { }
                 return remoteRuleRule;
             }
 
-            var homeRules = [];
+            var importList = [];
             var updateList = [];
-            function generateHomeRulesUrl(rules) {
+            var importListFile = "hiker://files/tmp_importList.json";
+            var updateListFile = "hiker://files/tmp_updateList.json";
+            function generateHomeRulesUrl(rules, filename) {
                 // 海阔视界，首页频道合集￥home_rule_url￥
                 var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
-                return "rule://" + base64Encode(base64Decode(homeRulesKey) + JSON.stringify(rules));
+                // setError (JSON.stringify(rules));
+                writeObjectToFile(filename, rules);
+                var str = base64Decode(homeRulesKey) + filename;
+                return "rule://" + base64Encode(str).replace(/\n/g, '');
             }
 
             var showRuleList = [];
@@ -673,36 +685,41 @@ if (getUrl().indexOf("rule://") != -1) {
                 //r.content = j.updateText;
                 showRuleList.push(r);
 
-                if (j.oldVersion != null && j.oldVersion < j.version) {
-                    updateList.push(getRuleInRemote(j));
+                var ruleInRemote = getRuleInRemote(j);
+                if (ruleInRemote !=null ) {
+                    if(j.oldVersion != null && j.oldVersion < j.version) {
+                        updateList.push(ruleInRemote);
+                    }
+                    importList.push(ruleInRemote);
                 }
-                homeRules.push(getRuleInRemote(j));
             }
 
             if (settings.noRulesNum != true && settings.hideAll != true){}
-                d.push({
-                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
-                        " ("
-                        + "更新:‘‘" + depotRulesStatus.updateNum
-                        + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
-                        + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
-                        + "’’)",
-                    col_type: "text_1",
-                });
+            d.push({
+                title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
+                    " ("
+                    + "更新:‘‘" + depotRulesStatus.updateNum
+                    + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
+                    + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
+                    + "’’)",
+                col_type: "text_1",
+            });
 
             if (updateList.length != 0) {
                 d.push({
-                    title: "““一键更新””\n(实验性功能)",
-                    url: generateHomeRulesUrl(updateList),
-                    col_type: "text_center_1",
+                    title: "““[自动生成]本页一键更新””",
+                    url: generateHomeRulesUrl(updateList, updateListFile),
+                    col_type: "text_1",
+                    desc: "更新‘‘不影响原分组’’，此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
                 });
             }
 
-            if (homeRules.length != 0) {
+            if (importList.length != 0) {
                 d.push({
-                    title: "““一键导入””\n(实验性功能)",
-                    url: generateHomeRulesUrl(homeRules),
-                    col_type: "text_center_1",
+                    title: "““[自动生成]本页一键导入””",
+                    url: generateHomeRulesUrl(importList, importListFile),
+                    col_type: "text_1",
+                    desc: "此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
                 });
             }
 
