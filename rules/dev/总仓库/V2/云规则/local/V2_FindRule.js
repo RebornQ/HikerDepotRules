@@ -66,6 +66,11 @@ depotStatus.settingsRemoteFile = "";
 // depotStatus.showEtc = true;
 
 var fileUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/V2_FindRule_Cloud.js";
+var betaFileUrl = "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/V2_FindRule_beta_Cloud.js";
+if (settings.beta == true) {
+    fileUrl = betaFileUrl;
+    putVar({key: 'beta', value: settings.beta});
+}
 eval(fetch(fileUrl, {}));
 
 // setError(JSON.stringify(d));
