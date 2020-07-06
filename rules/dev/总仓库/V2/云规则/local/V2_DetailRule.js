@@ -63,10 +63,6 @@ var settings = {
     // https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/ignoreUpdateRuleList.json
     // https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/Reborn/ignoreUpdateRuleList.json
 };
-// 注意事项文字
-var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
-// 首次导入文字
-var firstImportText = "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项";
 var statusCacheFile = getVar('statusCacheFile');
 // 若不是第一次使用总仓库则存储仓库状态
 var depotStatus = {

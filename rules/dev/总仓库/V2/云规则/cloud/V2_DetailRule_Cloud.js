@@ -1,3 +1,9 @@
+// 注意事项文字
+var waringText = "1. 保存后需要手动下拉刷新才能更新规则状态" + "\n2. 按钮形状的规则是处于最新版本的，点击可跳转至规则页";
+// 首次导入文字
+var firstImportText = "1.‘‘下拉刷新即可显示仓库规则’’" + "\n2.二级规则中 needChangeShowType 可设置显示样式" + "\n3.二级规则中 hideAll 可设置一键隐藏标题和注意事项";
+
+
 function writeObjectToFile(fileUrl, object) {
     writeFile(fileUrl, JSON.stringify(object));
 }
