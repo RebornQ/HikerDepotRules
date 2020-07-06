@@ -102,16 +102,22 @@ if (depotStatus.showTips != false) {
     };
 
     // 为所有分类添加总仓库项
+    // 更新程序 updateMode 0->自动更新模式 1->手动更新模式
+    var updateMode = 0;
     try {
         var remoteDepotRule = {};
         eval("remoteDepotRule=" + fetch(settings.remoteDepotRuleUrl, {}));
-        // var localDepotRule = JSON.parse(getRule());
-        remoteDepotRule.oldVersion = depotStatus.version;
-        //setError(JSON.stringify(localDepotRule));
         //setError(JSON.stringify(remoteDepotRule));
+        if (updateMode == 0) {
+            remoteDepotRule.oldVersion = depotStatus.version;
+        } else if (updateMode == 1) {
+            var localDepotRule = JSON.parse(getRule());
+            remoteDepotRule.oldVersion = localDepotRule.version;
+            //setError(JSON.stringify(localDepotRule));
+        }
         if (remoteDepotRule.oldVersion < remoteDepotRule.version) {
             d.push({
-                title: remoteDepotRule.title + "\t‘‘已更新完成’’",
+                title: remoteDepotRule.title + "\t" + (updateMode == 0 ? "‘‘已更新完成’’" : desc(remoteDepotRule)),
                 url: "https://baidu.com#" + JSON.stringify(remoteDepotRule) || "",
                 col_type: "text_center_1",
                 desc: "【更新日志】\n更多完整日志请在里面点击进入原网页查看"
