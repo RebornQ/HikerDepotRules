@@ -11,6 +11,8 @@ var needCacheSetting = true;
 
 // 仓库个性设置
 var settings = {
+    // beta测试版，若要开启测试通道请设为true
+    beta: false,
     // 在这里添加仓库配置，可使本地添加的仓库置顶
     authorList: [
         "[例子]置顶私人仓库@@Reborn_0@@HikerRulesPrivacy@@access_token='****'",
@@ -32,8 +34,9 @@ var settings = {
     needHideRule: true,
     // 自行添加要隐藏的标记，格式为：["[标记名1]"，"[标记名2]"...]
     hideSymbols: ["[模板]", "[未完成]"],
-    // 总仓库更新地址
+    // 总仓库更新地址，若总仓库更新没问题请勿擅自修改！！！
     remoteDepotRuleUrl: "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/depotRule_v2_release.json",
+    remoteBetaDepotRuleUrl: "https://gitee.com/qiusunshine233/hikerView/raw/master/ruleversion/depotRule_v2_beta.json"
 };
 // 若不是第一次使用总仓库则隐藏开发文档
 var depotStatus = {

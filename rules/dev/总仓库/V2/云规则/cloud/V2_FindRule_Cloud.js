@@ -1,6 +1,9 @@
 // 更新程序模式 0->自动更新模式 1->手动更新模式
 var updateMode = 0;
 
+// 是否为测试通道
+if (settings.beta == true) settings.remoteDepotRuleUrl = settings.remoteBetaDepotRuleUrl;
+
 function writeObjectToFile(fileUrl, object) {
     writeFile(fileUrl, JSON.stringify(object));
 }
