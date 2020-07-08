@@ -351,11 +351,15 @@ try {
                     col_type: "pic_1"
                 });
             } else if (typeof (notice) == "object" && notice.desc != null && notice.desc != "") {
+                var picUrl = notice.picUrl;
+                var picReg = new RegExp(/js:([\s\S]*)/);
+                if (picReg.test(picUrl) === true) {
+                    picUrl = eval(RegExp.$1);
+                }
                 d.push({
                     title: notice.title != null && notice.title != "" ? notice.title : "仓库通知",
                     desc: notice.desc,
-                    pic_url: notice.picUrl,
-// != null && notice.picUrl != "" ? notice.picUrl : "",
+                    pic_url: picUrl,
                     col_type: "pic_1"
                 });
             }
