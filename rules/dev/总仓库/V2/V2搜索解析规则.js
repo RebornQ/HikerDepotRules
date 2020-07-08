@@ -22,6 +22,7 @@ var {
 // js:
 var res = {};
 var d = [];
+eval(getCryptoJS());
 var key = getUrl().split("#")[1];
 // key = "影视";
 var page = 1;
@@ -50,6 +51,23 @@ if (key != null && key != "") {
             // "[例子]置底本地仓库@@Reborn_0@@HikerRulesPrivacy"
         ],
     };
+
+    // 似乎加了之后慢了很多？
+    var ruleReg = new RegExp(/{[^]*/);
+    function getRuleKeyWord(remoteRule) {
+        var remoteRuleRule = null;
+        try {
+            eval("remoteRuleRule=" + base64Decode(remoteRule.rule.replace("rule://", "")).match(ruleReg)[0]);
+        } catch (e) { }
+        var remoteRuleKeyWord = null;
+        if(remoteRuleRule != null) {
+            try {
+                remoteRuleKeyWord = remoteRuleRule.title + remoteRuleRule.url + remoteRuleRule.author;
+            } catch (e) { }
+        }
+        if(remoteRuleKeyWord == null) remoteRuleKeyWord = remoteRule.title;
+        return remoteRuleKeyWord;
+    }
 
     // 搜索解析思路：
     // 获取搜索链接中的**，然后循环遍历每一个仓库的规则，正则模糊匹配到不为空的就加入搜索结果
@@ -122,6 +140,12 @@ if (key != null && key != "") {
             } else {
                 Array.prototype.push.apply(mRemoteRules, remoteSource);
             }
+            /*if(mRemoteRules.length < page * 8) {
+                 page++;
+                 pageSize = page * 5;
+                 pageAdd++;
+                 putVar({key: 'pageAdd', value: pageAdd});
+            }*/
         }catch (e) {
         }
     }
@@ -133,7 +157,7 @@ if (key != null && key != "") {
         while (left <= right) {
             var remoteRuleLeft = mRemoteRules[left];
             var remoteRuleRight = mRemoteRules[right];
-            if (regExp.test(remoteRuleLeft.title) == true) {
+            if (regExp.test(getRuleKeyWord(remoteRuleLeft)) == true) {
                 d.push({
                     title: remoteRuleLeft.title,
                     url: "https://baidu.com#" + remoteRuleLeft.rule,
@@ -141,7 +165,7 @@ if (key != null && key != "") {
                     content: "云端版本：" + remoteRuleLeft.version
                 });
             }
-            if (regExp.test(remoteRuleRight.title) == true) {
+            if (regExp.test(getRuleKeyWord(remoteRuleRight)) == true) {
                 d.push({
                     title: remoteRuleRight.title,
                     url: "https://baidu.com#" + remoteRuleRight.rule,
