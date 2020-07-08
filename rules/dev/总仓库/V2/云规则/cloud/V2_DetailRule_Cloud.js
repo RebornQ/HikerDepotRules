@@ -586,20 +586,9 @@ if (getUrl().indexOf("rule://") != -1) {
                 }
             }
 
-            if (settings.noRulesNum != true && settings.hideAll != true){}
-            d.push({
-                title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
-                    " ("
-                    + "更新:‘‘" + depotRulesStatus.updateNum
-                    + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
-                    + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
-                    + "’’)",
-                col_type: "text_1",
-            });
-
             if (updateList.length != 0) {
                 d.push({
-                    title: "““[自动生成]本页一键更新””",
+                    title: "‘‘’’<b>[自动生成]点击一键更新本页</b>",
                     url: generateHomeRulesUrl(updateList, updateListFile),
                     col_type: "text_1",
                     desc: "更新‘‘不影响原分组’’，此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
@@ -608,10 +597,22 @@ if (getUrl().indexOf("rule://") != -1) {
 
             if (importList.length != 0) {
                 d.push({
-                    title: "““[自动生成]本页一键导入””",
+                    title: "[自动生成]点击一键导入本页",
                     url: generateHomeRulesUrl(importList, importListFile),
-                    col_type: "text_1",
+                    col_type: "pic_1",
                     desc: "此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
+                });
+            }
+
+            if (settings.noRulesNum != true && settings.hideAll != true){
+                d.push({
+                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
+                        " ("
+                        + "更新:‘‘" + depotRulesStatus.updateNum
+                        + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
+                        + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
+                        + "’’)",
+                    col_type: "text_1",
                 });
             }
 
