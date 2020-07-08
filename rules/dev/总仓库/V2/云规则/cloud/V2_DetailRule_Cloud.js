@@ -335,6 +335,7 @@ if (getUrl().indexOf("rule://") != -1) {
                             col_type: "pic_1"
                         });
                     } else if (typeof (notice) == "object" && notice.desc != null && notice.desc != "") {
+                        // TODO pic_url 使用 js 执行模式 以支持 new Date().getTime();
                         d.push({
                             title: notice.title != null && notice.title != "" ? notice.title : "仓库通知",
                             desc: notice.desc,
@@ -517,6 +518,7 @@ if (getUrl().indexOf("rule://") != -1) {
 
             remoteRules = mergeSort(remoteRules);
 
+            // TODO 部分编码解析支持，即对第一次解码后格式为 "海阔视界规则分享，当前分享的是：首页频道 home_rule_v2 base64://@{规则名}@{视界规则base64}"的解析
             var ruleReg = new RegExp(/{[^]*/);
             function getRuleInRemote(remoteRule) {
                 var remoteRuleRule = null;
@@ -534,7 +536,7 @@ if (getUrl().indexOf("rule://") != -1) {
             var importListFile = "hiker://files/tmp/tmp_importList.json";
             var updateListFile = "hiker://files/tmp/tmp_updateList.json";
             function generateHomeRulesUrl(rules, filename) {
-                // 海阔视界，首页频道合集￥home_rule_url￥
+                // 海阔视界，首页频道合集 home_rule_url
                 var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
                 // setError (JSON.stringify(rules));
                 writeObjectToFile(filename, rules);
