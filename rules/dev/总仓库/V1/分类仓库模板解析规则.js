@@ -77,9 +77,9 @@ var settings = {
 
     // 为所有分类添加该分类仓库更新功能
     // 需要像总仓库一样单独用一个json管理，自行填入地址
-    remoteDepotRuleUrl: "",
+    remoteDepotRuleUrl: "https://gitee.com/Reborn_0/HikerRulesDepot/raw/master/update.json",
     // 若不需要更新则关闭
-    showUpdateErrorTips: false,
+    showUpdateErrorTips: true,
 };
 
 // 仓库状态缓存文件地址
@@ -150,9 +150,13 @@ if (apiType == "0") {
     // var remoteHome = "https://gitee.com/" + owner + "/" + repo + "/blob/master/update.json";
 }
 
+function writeObjectToFile(fileUrl, object) {
+    writeFile(fileUrl, JSON.stringify(object));
+}
+
 // 把总仓库状态写入文件
 function writeDepotStatusToFile(depotStatus) {
-    writeFile(statusCacheFile, JSON.stringify(depotStatus));
+    writeObjectToFile(statusCacheFile, depotStatus);
 }
 
 // 若不是第一次使用总仓库则隐藏开发文档
@@ -302,14 +306,16 @@ try {
     var remoteDepotRule = {};
     eval("remoteDepotRule=" + fetch(settings.remoteDepotRuleUrl, {}));
     var localDepotRule = JSON.parse(getRule());
+    remoteDepotRule = remoteDepotRule.data[0];
     remoteDepotRule.oldVersion = localDepotRule.version;
 //setError(JSON.stringify(localDepotRule));
 //setError(JSON.stringify(remoteDepotRule));
     if (remoteDepotRule.oldVersion < remoteDepotRule.version) {
         d.push({
-            title: "‘‘有新版本：" + remoteDepotRule.version + "’’，点击导入新版本",
+            title: "‘‘模板有新版本：" + remoteDepotRule.version + "’’，请联系作者去总仓库更新",
 // remoteDepotRule.title + "\t" + desc(rules, remoteDepotRule),
-            url: remoteDepotRule.rule || "",
+//             url: remoteDepotRule.rule || "",
+            url: "hiker://home@总仓库",
             col_type: "text_center_1",
             //content: remoteDepotRule.updateText,
             desc: "【更新日志】\n" + remoteDepotRule.updateText
@@ -516,6 +522,31 @@ if (remoteRules.length == 0) {
 
     remoteRules = mergeSort(remoteRules);
 
+    var ruleReg = new RegExp(/{[^]*/);
+    function getRuleInRemote(remoteRule) {
+        var remoteRuleRule = null;
+        try {
+            eval("remoteRuleRule=" + base64Decode(remoteRule.rule.replace("rule://", "")).match(ruleReg)[0]);
+            if(remoteRule.group != null && remoteRuleRule != null) {
+                remoteRuleRule.group = remoteRule.group;
+            }
+        } catch (e) { }
+        return remoteRuleRule;
+    }
+
+    var importList = [];
+    var updateList = [];
+    var importListFile = "hiker://files/tmp_importList.json";
+    var updateListFile = "hiker://files/tmp_updateList.json";
+    function generateHomeRulesUrl(rules, filename) {
+        // 海阔视界，首页频道合集￥home_rule_url￥
+        var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
+        // setError (JSON.stringify(rules));
+        writeObjectToFile(filename, rules);
+        var str = base64Decode(homeRulesKey) + filename;
+        return "rule://" + base64Encode(str).replace(/\n/g, '');
+    }
+
     var showRuleList = [];
     // setError(JSON.stringify(remoteRules));
     for (var i = 0; i < remoteRules.length; i++) {
@@ -550,6 +581,32 @@ if (remoteRules.length == 0) {
                 : (j.rule || "");
         //r.content = j.updateText;
         showRuleList.push(r);
+
+        var ruleInRemote = getRuleInRemote(j);
+        if (ruleInRemote !=null ) {
+            if(j.oldVersion != null && j.oldVersion < j.version) {
+                updateList.push(ruleInRemote);
+            }
+            importList.push(ruleInRemote);
+        }
+    }
+
+    if (updateList.length != 0) {
+        d.push({
+            title: "‘‘’’<b>[自动生成]点击一键更新本页</b>",
+            url: generateHomeRulesUrl(updateList, updateListFile),
+            col_type: "text_1",
+            desc: "更新‘‘不影响原分组’’，此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
+        });
+    }
+
+    if (importList.length != 0) {
+        d.push({
+            title: "[自动生成]点击一键导入本页",
+            url: generateHomeRulesUrl(importList, importListFile),
+            col_type: "pic_1",
+            desc: "此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
+        });
     }
 
     if (settings.noRulesNum != true && settings.hideAll != true)
