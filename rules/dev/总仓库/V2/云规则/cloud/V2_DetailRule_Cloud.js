@@ -592,6 +592,7 @@ if (getUrl().indexOf("rule://") != -1) {
                 }
             }
 
+            // TODO 自动生成可 lazyRule 动态解析，但是在 lazyRule 里面定义 generateHomeRulesUrl() 函数好像有一点点麻烦，顶多可以省一下频繁写文件的性能
             if (updateList.length != 0) {
                 d.push({
                     title: "‘‘’’<b>[自动生成]点击一键更新本页</b>",
@@ -601,6 +602,8 @@ if (getUrl().indexOf("rule://") != -1) {
                 });
             }
 
+            // TODO 改合集分组为作者名/当前分类名
+            // 思路：要解开 rule:// 后面的 base64 再提取口令后面的内容 再 JSON.parse 再改分组再合成口令再 base64 再合成 rule:// 链接
             if (importList.length != 0) {
                 d.push({
                     title: "[自动生成]点击一键导入本页",
