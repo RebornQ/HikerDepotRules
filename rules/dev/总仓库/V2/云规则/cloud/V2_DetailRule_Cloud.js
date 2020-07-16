@@ -335,10 +335,15 @@ if (getUrl().indexOf("rule://") != -1) {
                             col_type: "pic_1"
                         });
                     } else if (typeof (notice) == "object" && notice.desc != null && notice.desc != "") {
+                        var picUrl = notice.picUrl;
+                        var picReg = new RegExp(/js:([\s\S]*)/);
+                        if (picReg.test(picUrl) === true) {
+                            picUrl = eval(RegExp.$1);
+                        }
                         d.push({
                             title: notice.title != null && notice.title != "" ? notice.title : "仓库通知",
                             desc: notice.desc,
-                            pic_url: notice.picUrl,
+                            pic_url: picUrl,
                             col_type: "pic_1"
                         });
                     }
@@ -517,6 +522,7 @@ if (getUrl().indexOf("rule://") != -1) {
 
             remoteRules = mergeSort(remoteRules);
 
+            // TODO 部分编码解析支持，即对第一次解码后格式为 "海阔视界规则分享，当前分享的是：首页频道 home_rule_v2 base64://@{规则名}@{视界规则base64}"的解析
             var ruleReg = new RegExp(/{[^]*/);
             function getRuleInRemote(remoteRule) {
                 var remoteRuleRule = null;
@@ -534,7 +540,7 @@ if (getUrl().indexOf("rule://") != -1) {
             var importListFile = "hiker://files/tmp/tmp_importList.json";
             var updateListFile = "hiker://files/tmp/tmp_updateList.json";
             function generateHomeRulesUrl(rules, filename) {
-                // 海阔视界，首页频道合集￥home_rule_url￥
+                // 海阔视界，首页频道合集 home_rule_url
                 var homeRulesKey = "5rW36ZiU6KeG55WM77yM6aaW6aG16aKR6YGT5ZCI6ZuG77+laG9tZV9ydWxlX3VybO+/pQ==";
                 // setError (JSON.stringify(rules));
                 writeObjectToFile(filename, rules);
@@ -586,32 +592,36 @@ if (getUrl().indexOf("rule://") != -1) {
                 }
             }
 
-            if (settings.noRulesNum != true && settings.hideAll != true){}
-            d.push({
-                title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
-                    " ("
-                    + "更新:‘‘" + depotRulesStatus.updateNum
-                    + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
-                    + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
-                    + "’’)",
-                col_type: "text_1",
-            });
-
+            // TODO 自动生成可 lazyRule 动态解析，但是在 lazyRule 里面定义 generateHomeRulesUrl() 函数好像有一点点麻烦，顶多可以省一下频繁写文件的性能
             if (updateList.length != 0) {
                 d.push({
-                    title: "““[自动生成]本页一键更新””",
+                    title: "‘‘’’<b>[自动生成]点击一键更新本页</b>",
                     url: generateHomeRulesUrl(updateList, updateListFile),
                     col_type: "text_1",
                     desc: "更新‘‘不影响原分组’’，此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
                 });
             }
 
+            // TODO 改合集分组为作者名/当前分类名
+            // 思路：要解开 rule:// 后面的 base64 再提取口令后面的内容 再 JSON.parse 再改分组再合成口令再 base64 再合成 rule:// 链接
             if (importList.length != 0) {
                 d.push({
-                    title: "““[自动生成]本页一键导入””",
+                    title: "[自动生成]点击一键导入本页",
                     url: generateHomeRulesUrl(importList, importListFile),
-                    col_type: "text_1",
+                    col_type: "pic_1",
                     desc: "此项由总仓库自动生成‘‘(实验性功能)’’\n\n注: 仅支持导入首页规则，其他请自行导入！"
+                });
+            }
+
+            if (settings.noRulesNum != true && settings.hideAll != true){
+                d.push({
+                    title: "<b>该仓库共有 ‘‘" + remoteRules.length + "’’ 条规则</b>" +
+                        " ("
+                        + "更新:‘‘" + depotRulesStatus.updateNum
+                        + "’’  未导入:‘‘" + depotRulesStatus.noImportNum
+                        + "’’  忽略:‘‘" + depotRulesStatus.ignoreNum
+                        + "’’)",
+                    col_type: "text_1",
                 });
             }
 
