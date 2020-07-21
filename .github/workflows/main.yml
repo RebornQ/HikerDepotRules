@@ -27,6 +27,15 @@ jobs:
       run: |
         bash merge_rules.sh
         bash merge.sh
+        cd ./class/noSniffer/anime/
+        bash merge_rules.sh
+        bash merge.sh
+        cd ./class/noSniffer/video/
+        bash merge_rules.sh
+        bash merge.sh
+        cd ./class/noSniffer/video_short/
+        bash merge_rules.sh
+        bash merge.sh
 
     - name: Commit files
       run: |
