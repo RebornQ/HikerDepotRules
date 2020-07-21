@@ -77,3 +77,4 @@ else
   echo $dataContent >> manifest
 fi
 echo '}' >> manifest
+rm temp

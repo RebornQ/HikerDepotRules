@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # https://blog.csdn.net/robinblog/article/details/8853628
-# TODO 把合并后的规则移动到大分类目录下
 DIR=`ls $1`
 home=$2
 echo $DIR
 echo $home
 for dir in ${DIR};
 do
+  dir_relative=${dir}
   dir=$1${dir}"/"
 	if [ -d ${dir} ];then
 		echo $dir
@@ -17,6 +17,10 @@ do
 		pwd
 		bash merge_rules.sh
 		bash merge.sh
+		mv manifest ../manifest_$dir_relative
+		rm merge_rules.sh
+		rm merge.sh
+		rm temp
 		cd $home
 	fi
 done
