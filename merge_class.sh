@@ -14,8 +14,8 @@ do
 		cp merge.sh ${dir}
 		cd ${dir}
 		pwd
-		sh merge_rules.sh
-		sh merge.sh
+		bash merge_rules.sh
+		bash merge.sh
 		cd $home
 	fi
 done

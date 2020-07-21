@@ -31,7 +31,9 @@
 ### 分类仓库开发者使用说明
 大家可以先看看我的模板目录结构：[https://github.com/RebornQ/HikerRules/tree/master/class/noSniffer](https://github.com/RebornQ/HikerRules/tree/master/class/noSniffer)
 
-文件说明与初步使用的一样，同样自己删除我的规则，同样除了那两种文件其他的都要**原封不动**的呆在**每一个分类**里面。
+文件说明与初步使用的一样，同样自己删除我的规则。
+
+新建的分类仓库**只需要**有 "xxx.json" 和 "notice.txt" **两种文件**即可，其他的文件会都自动生成。
 
 但是**有一点不同的是要改一个文件**：`项目根目录/.github/workflows/main.yml`；
 
@@ -47,9 +49,18 @@
    bash merge_class.sh ./{你的大分类目录路径} $home
    ```
 
+   合并后的规则在每个小分类的
+
    > 解释一下什么叫大分类：
-   > 举例我的目录 "./class/noSniffer/"，class就是分类的意思，大分类是指noSniffer(免嗅)，其中有很多小分类 { anime video video_short } 分别代表 { 动漫 影视 短视频 }
-   > 即项目目录结构要满足：
+   >
+   > 举例我的目录 "./class/noSniffer/":
+   > - class 就是 分类 的意思
+   > - 大分类 是指 noSniffer (免嗅)
+   > - 其中有很多 小分类 { anime video video_short } 分别代表 { 动漫 影视 短视频 }<br><br>
+   >
+   > PS：不一定要分很多个大分类，也可以把所有小分类丢到一个文件夹，这个文件夹就是所有小分类的大分类
+   >
+   > 即大分类目录结构要满足：
    > ```bash
    > .
    > └── 大分类
