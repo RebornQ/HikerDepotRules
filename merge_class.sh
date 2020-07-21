@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # https://blog.csdn.net/robinblog/article/details/8853628
+# TODO 把合并后的规则移动到大分类目录下
 DIR=`ls $1`
 home=$2
 echo $DIR
