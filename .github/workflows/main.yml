@@ -24,7 +24,7 @@ jobs:
 
     # Runs merge
     - name: Run merge
-      run: bash /rules/dev/总仓库/merge_rule/merge.sh
+      run: bash ./rules/dev/总仓库/merge_rule/merge.sh
       
     - name: Commit files
       run: |
