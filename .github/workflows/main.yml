@@ -28,17 +28,7 @@ jobs:
         home=$(pwd)
         bash merge_rules.sh
         bash merge.sh
-        cd ./class/noSniffer/anime/
-        bash merge_rules.sh
-        bash merge.sh
-        cd $home
-        cd ./class/noSniffer/video/
-        bash merge_rules.sh
-        bash merge.sh
-        cd $home
-        cd ./class/noSniffer/video_short/
-        bash merge_rules.sh
-        bash merge.sh
+        bash merge_class.sh ./class/noSniffer/ $home
 
     - name: Commit files
       run: |

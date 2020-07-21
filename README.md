@@ -39,25 +39,29 @@
 1. 在这个文件中搜索`# Runs merge`，找到下面的run结点，删掉我的分类仓库规则：
 
    ```bash
-   cd ./class/noSniffer/anime/
-   bash merge_rules.sh
-   bash merge.sh
-   cd $home
-   cd ./class/noSniffer/video/
-   bash merge_rules.sh
-   bash merge.sh
-   cd $home
-   cd ./class/noSniffer/video_short/
-   bash merge_rules.sh
-   bash merge.sh
+   bash merge_class.sh ./class/noSniffer/ $home
    ```
-2. 每添加一个分类都要在这个结点下添加以下代码：
+2. 每添加一个**大分类**都要在这个结点下添加以下代码：
 
    ```shell
-   cd $home
-   cd ./{你的分类目录}
-   bash merge_rules.sh
-   bash merge.sh
+   bash merge_class.sh ./{你的大分类目录路径} $home
    ```
 
-完成这些配置之后，在分类中添加`{规则名}.json`文件开始填自己的规则吧，**一个文件只能一个规则噢**~
+   > 解释一下什么叫大分类：
+   > 举例我的目录 "./class/noSniffer/"，class就是分类的意思，大分类是指noSniffer(免嗅)，其中有很多小分类 { anime video video_short } 分别代表 { 动漫 影视 短视频 }
+   > 即项目目录结构要满足：
+   > ```bash
+   > .
+   > └── 大分类
+   >     ├── 小分类1
+   >     │   ├── notice.txt
+   >     │   ├── 规则1.json
+   >     │   └── 规则2.json
+   >     └── 小分类2
+   >     │   ├── notice.txt
+   >     │   ├── 规则1.json
+   >     │   └── 规则2.json
+   >     └── ...
+   > ```
+
+完成这些配置之后，在分类中添加 "{规则名}.json" 和 "notice.txt" 通知文件开始填自己的规则吧，**一个JSON文件只能一个规则噢**~
