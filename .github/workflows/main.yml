@@ -6,9 +6,9 @@ name: update mainfest on push
 # events but only for the master branch
 on:
   push:
-    branches: [ root ]
+    branches: [ master ]
   pull_request:
-    branches: [ root ]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,7 +24,9 @@ jobs:
 
     # Runs merge
     - name: Run merge
-      run: bash merge.sh
+      run: |
+        bash merge_rules.sh
+        bash merge.sh
 
     - name: Commit files
       run: |

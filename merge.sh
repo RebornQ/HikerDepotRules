@@ -1,5 +1,7 @@
 #!/bin/bash
 
+dataContent=`cat temp`
+
 ### 3 params: json, key, defaultValue
 function getJsonValuesByAwk() {
     awk -v json="$1" -v key="$2" -v defaultValue="$3" 'BEGIN{
@@ -67,9 +69,6 @@ else
   echo ','>> manifest
 fi
 
-echo > temp
-sh merge_rules.sh
-dataContent=`cat temp`
 if [ ! -n "$dataContent" ]; then
   echo "DataContent IS NULL"
 else
