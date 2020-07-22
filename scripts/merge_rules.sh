@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source_dir=$1
+home=$2
+
+cd $source_dir
 # https://stackoverflow.com/questions/23387256/shell-script-to-join-5-or-more-json-files-together
 shopt -s nullglob
 declare -a jsons
@@ -16,3 +20,4 @@ fi
 echo ']' >>temp             # complete the temp
 
 echo success
+cd $home

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source_dir=$1
+home=$2
+
+cd $source_dir
 dataContent=`cat temp`
 
 ### 3 params: json, key, defaultValue
@@ -77,3 +81,4 @@ else
   echo $dataContent >> manifest
 fi
 echo '}' >> manifest
+cd $home
