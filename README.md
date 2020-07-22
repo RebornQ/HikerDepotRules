@@ -19,7 +19,8 @@
 2. 申请一个 github access token，然后点击项目的`Settings-Secrets-New Secret`；填完信息然后`Add`；
     - `name`必须填`ACCESS_TOKEN`
     - `value`填刚刚申请到的 access token
-3. 进入 rules 目录添加`{规则名}.json`文件开始填自己的规则吧，**一个文件只能一个规则噢**~
+3. 初次使用需要先点一次上面的 Github Actions 为项目开启该功能；
+4. 进入 rules 目录添加`{规则名}.json`文件开始填自己的规则吧，**一个文件只能一个规则噢**~
 
 > 文件说明：
 > - xxx.json: 单个规则文件
