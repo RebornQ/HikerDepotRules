@@ -12,7 +12,7 @@ dataContent=`cat temp`
 
 # https://stackoverflow.com/questions/23387256/shell-script-to-join-5-or-more-json-files-together
 echo '{' > manifest.json
-noticeJson=`cat notice.txt`
+noticeJson=`cat notice*`
 noticeContent=
 if [ ! -n "$noticeJson" ]; then
   echo "Notice IS NULL"
