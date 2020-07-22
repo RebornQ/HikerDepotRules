@@ -3,7 +3,11 @@
 source_dir=$1
 home=$2
 
-cd $source_dir
+if [ ! -n "$source_dir" ]; then
+  echo "source_dir is null"
+else
+  cd $source_dir
+fi
 dataContent=`cat temp`
 
 ### 3 params: json, key, defaultValue
@@ -81,4 +85,9 @@ else
   echo $dataContent >> manifest
 fi
 echo '}' >> manifest
-cd $home
+
+if [ ! -n "$home" ]; then
+  echo "home is null"
+else
+  cd $home
+fi

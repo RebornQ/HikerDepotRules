@@ -3,7 +3,11 @@
 source_dir=$1
 home=$2
 
-cd $source_dir
+if [ ! -n "$source_dir" ]; then
+  echo "source_dir is null"
+else
+  cd $source_dir
+fi
 # https://stackoverflow.com/questions/23387256/shell-script-to-join-5-or-more-json-files-together
 shopt -s nullglob
 declare -a jsons
@@ -20,4 +24,8 @@ fi
 echo ']' >>temp             # complete the temp
 
 echo success
-cd $home
+if [ ! -n "$home" ]; then
+  echo "home is null"
+else
+  cd $home
+fi
