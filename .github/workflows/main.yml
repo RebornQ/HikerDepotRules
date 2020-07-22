@@ -23,12 +23,19 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs merge
+    # 注意：run 里面只有中间三行可以自定义
     - name: Run merge
       run: |
         home=$(pwd)
+        scripts_dir=$home'/scripts/'
+        bash $scripts_dir/cp_scripts.sh $scripts_dir $home
+
         bash merge_rules.sh
         bash merge.sh
         bash merge_class.sh ./class/noSniffer/ $home
+
+        cd $home
+        bash $scripts_dir/clean_scripts.sh $home
 
     - name: Commit files
       run: |
