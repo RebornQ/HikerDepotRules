@@ -5,13 +5,13 @@
 （其实顺手修复了一下合并脚本第一个JSON对象会重复出现的问题）
 
 # 仓库规则（README也抄了🙈️）
-[manifest](https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest) 是合并后的规则，链接：
+[manifest.json](https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json) 是合并后的规则，链接：
 
-`https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest`
+`https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json`
 
-网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest)，链接：
+网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest.json from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json)，链接：
 
-`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest`
+`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json`
 
 # 仓库开发者使用说明
 ## 初步使用
@@ -50,7 +50,7 @@
    bash merge_classes.sh ./{你的大分类目录路径} $home
    ```
 
-   **合并后的规则在每个大分类目录下的 manifest_{小分类名} 文件**
+   **合并后的规则在每个大分类目录下的 manifest_{小分类名}.json 文件**
 
    > 解释一下什么叫大分类：
    >

@@ -17,7 +17,7 @@ do
 		pwd
 		bash merge_rules.sh
 		bash merge.sh
-		mv manifest ../manifest_$dir_relative
+		mv manifest.json ../manifest_$dir_relative.json
 		rm merge_rules.sh
 		rm merge.sh
 		rm temp

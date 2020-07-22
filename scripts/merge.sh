@@ -58,7 +58,7 @@ function getJsonValuesByAwk() {
 }
 
 # https://stackoverflow.com/questions/23387256/shell-script-to-join-5-or-more-json-files-together
-echo '{' > manifest
+echo '{' > manifest.json
 noticeJson=`cat notice.txt`
 noticeContent=
 if [ ! -n "$noticeJson" ]; then
@@ -72,19 +72,19 @@ if [ ! -n "$noticeContent" ]; then
     echo "NoticeContent IS NULL"
 else
   echo "NoticeContent NOT NULL"
-  echo '"notice": '>> manifest
-  echo $noticeContent >> manifest
-  echo ','>> manifest
+  echo '"notice": '>> manifest.json
+  echo $noticeContent >> manifest.json
+  echo ','>> manifest.json
 fi
 
 if [ ! -n "$dataContent" ]; then
   echo "DataContent IS NULL"
 else
   echo "DataContent NOT NULL"
-  echo '"data": '>> manifest
-  echo $dataContent >> manifest
+  echo '"data": '>> manifest.json
+  echo $dataContent >> manifest.json
 fi
-echo '}' >> manifest
+echo '}' >> manifest.json
 
 if [ ! -n "$home" ]; then
   echo "home is null"
