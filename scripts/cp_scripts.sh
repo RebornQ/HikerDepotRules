@@ -6,4 +6,4 @@ echo $from
 echo $target
 cp $from/merge_rules.sh $target
 cp $from/merge.sh $target
-cp $from/merge_class.sh $target
+cp $from/merge_classes.sh $target

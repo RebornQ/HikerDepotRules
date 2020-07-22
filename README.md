@@ -29,7 +29,7 @@
 
 ## 进阶
 ### 分类仓库开发者使用说明
-大家可以先看看我的模板目录结构：[https://github.com/RebornQ/HikerRules/tree/master/class/noSniffer](https://github.com/RebornQ/HikerRules/tree/master/class/noSniffer)
+大家可以先看看我的模板目录结构：[https://github.com/RebornQ/HikerRules/tree/master/classes/noSniffer](https://github.com/RebornQ/HikerRules/tree/master/classes/noSniffer)
 
 文件说明与初步使用的一样，同样自己删除我的规则。
 
@@ -41,20 +41,20 @@
 1. 在这个文件中搜索`# Runs merge`，找到下面的run结点，删掉我的分类仓库规则：
 
    ```bash
-   bash merge_class.sh ./class/noSniffer/ $home
+   bash merge_classes.sh ./classes/noSniffer/ $home
    ```
 2. 每添加一个**大分类**都要在这个结点下添加以下代码：
 
    ```shell
-   bash merge_class.sh ./{你的大分类目录路径} $home
+   bash merge_classes.sh ./{你的大分类目录路径} $home
    ```
 
    **合并后的规则在每个大分类目录下的 manifest_{小分类名} 文件**
 
    > 解释一下什么叫大分类：
    >
-   > 举例我的目录 "./class/noSniffer/":
-   > - class 就是 分类 的意思
+   > 举例我的目录 "./classes/noSniffer/":
+   > - classes 就是 分类 的意思
    > - 大分类 是指 noSniffer (免嗅)
    > - 其中有很多 小分类 { anime video video_short } 分别代表 { 动漫 影视 短视频 }<br><br>
    >

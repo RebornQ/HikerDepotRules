@@ -32,7 +32,7 @@ jobs:
 
         bash merge_rules.sh
         bash merge.sh
-        bash merge_class.sh ./class/noSniffer/ $home
+        bash merge_classes.sh ./classes/noSniffer/ $home
 
         cd $home
         bash $scripts_dir/clean_scripts.sh $home
