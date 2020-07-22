@@ -1,0 +1,9 @@
+#网络m3u直播源
+6月1,https://gitee.com/william533036/iptv-m3u-maker/raw/dev/tv.m3u8
+6月2,https://gitee.com/qiusunshine233/hikerView/raw/master/tv/20200609/1-1160channels.m3u
+6月3,https://gitee.com/qiusunshine233/hikerView/raw/master/tv/20200609/11-福建移动.m3u
+6月4,https://gitee.com/qiusunshine233/hikerView/raw/master/tv/20200609/2-北京移动.m3u
+5月28,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/%E5%9B%BD%E5%86%85%E5%9C%B0%E6%96%B9%E5%8F%B0202005.m3u
+海外,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/台湾香港海外202005.m3u
+轮播,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/轮播_爱奇艺CIBN华数NewTV虎牙战旗-202005.m3u
+#
