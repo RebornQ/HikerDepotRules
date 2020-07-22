@@ -11,7 +11,13 @@
 
 网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest.json from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json)，链接：
 
-`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json`
+~~`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json`~~
+
+上面那个默认更新缓存时间太长了，用下面这个吧：
+
+`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules@latest/manifest.json`
+
+> 不过听说 @latest 这种方法并不推荐，但是测试能用的话是还是可以用的🙈️。具体说明的链接在这里 [利用jsDelivr白嫖全球超高速静态资源访问服务！](https://www.bilibili.com/read/cv4297993/)
 
 # 仓库开发者使用说明
 ## 初步使用
