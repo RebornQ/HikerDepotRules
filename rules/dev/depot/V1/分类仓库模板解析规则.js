@@ -315,7 +315,7 @@ try {
             title: "‘‘模板有新版本：" + remoteDepotRule.version + "’’，请联系作者去总仓库更新",
 // remoteDepotRule.title + "\t" + desc(rules, remoteDepotRule),
 //             url: remoteDepotRule.rule || "",
-            url: "hiker://home@总仓库",
+            url: "hiker://home@depot",
             col_type: "text_center_1",
             //content: remoteDepotRule.updateText,
             desc: "【更新日志】\n" + remoteDepotRule.updateText
