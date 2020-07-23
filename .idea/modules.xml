@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/haikuoshijie_rules.iml" filepath="$PROJECT_DIR$/.idea/haikuoshijie_rules.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/haikuoshijie_rules_dev.iml" filepath="$PROJECT_DIR$/.idea/haikuoshijie_rules_dev.iml" />
     </modules>
   </component>
 </project>
