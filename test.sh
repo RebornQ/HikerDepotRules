@@ -10,7 +10,7 @@ bash $scripts_dir/cp_scripts.sh $scripts_dir $home
 # 自定义
 bash merge_rules.sh $rules_dir $home
 bash merge.sh $rules_dir $home
-mv $rules_dir/manifest $home/manifest
+mv $rules_dir/manifest.json $home/manifest.json
 
 bash merge_classes.sh ./classes/noSniffer/ $home
 
