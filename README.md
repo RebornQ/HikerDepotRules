@@ -5,13 +5,19 @@
 （其实顺手修复了一下合并脚本第一个JSON对象会重复出现的问题）
 
 # 仓库规则（README也抄了🙈️）
-[manifest](https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest) 是合并后的规则，链接：
+[manifest.json](https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json) 是合并后的规则，链接：
 
-`https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest`
+`https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json`
 
-网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest)，链接：
+网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest.json from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json)，链接：
 
-`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest`
+`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json`
+
+或
+
+`https://raw.staticdn.net/RebornQ/HikerRules/master/manifest.json`
+
+> jsdelivr 加 @latest 这种方法并不能拿到最新的内容，它是根据url缓存的。具体说明的链接在这里 [利用jsDelivr白嫖全球超高速静态资源访问服务！](https://www.bilibili.com/read/cv4297993/)
 
 # 仓库开发者使用说明
 ## 初步使用
@@ -24,7 +30,7 @@
 
 > 文件说明：
 > - xxx.json: 单个规则文件
-> - notice.txt: 仓库通知，注意虽然里面是json内容但是**后缀不要改成json**，不然自动合并会炸
+> - notice.json: 仓库通知
 >
 > **注意：除了上面两种文件其他的都不能动**
 
@@ -34,7 +40,7 @@
 
 文件说明与初步使用的一样，同样自己删除我的规则。
 
-新建的分类仓库**只需要**有 "xxx.json" 和 "notice.txt" **两种文件**即可，其他的文件会都自动生成。
+新建的分类仓库**只需要**有 "xxx.json" 和 "notice.json" **两种文件**即可，其他的文件会都自动生成。
 
 但是**有一点不同的是要改一个文件**：`项目根目录/.github/workflows/main.yml`；
 
@@ -50,7 +56,7 @@
    bash merge_classes.sh ./{你的大分类目录路径} $home
    ```
 
-   **合并后的规则在每个大分类目录下的 manifest_{小分类名} 文件**
+   **合并后的规则在每个大分类目录下的 manifest_{小分类名}.json 文件**
 
    > 解释一下什么叫大分类：
    >
@@ -66,14 +72,14 @@
    > .
    > └── 大分类
    >     ├── 小分类1
-   >     │   ├── notice.txt
+   >     │   ├── notice.json
    >     │   ├── 规则1.json
    >     │   └── 规则2.json
    >     └── 小分类2
-   >     │   ├── notice.txt
+   >     │   ├── notice.json
    >     │   ├── 规则1.json
    >     │   └── 规则2.json
    >     └── ...
    > ```
 
-完成这些配置之后，在分类中添加 "{规则名}.json" 和 "notice.txt" 通知文件开始填自己的规则吧，**一个JSON文件只能一个规则噢**~
+完成这些配置之后，在分类中添加 "{规则名}.json" 和 "notice.json" 通知文件开始填自己的规则吧，**一个JSON文件只能一个规则噢**~
