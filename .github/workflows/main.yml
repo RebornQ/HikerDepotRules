@@ -24,8 +24,8 @@ jobs:
 
     # Runs merge
     - name: Run merge
-      run: bash ./rules/dev/总仓库/merge_rule/merge.sh
-      
+      run: bash ./rules/dev/depot/merge_rule/merge.sh
+
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
@@ -35,4 +35,4 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ secrets.ACCESS_TOKEN }}  
+        github_token: ${{ secrets.ACCESS_TOKEN }}
