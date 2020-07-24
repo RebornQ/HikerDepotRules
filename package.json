@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "conventional-changelog-cli": "^2.0.34",
     "crypto-js": "^4.0.0",
     "http-proxy-agent": "^4.0.1",
     "https-proxy-agent": "^5.0.0",
