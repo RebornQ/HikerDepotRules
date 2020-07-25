@@ -6,4 +6,5 @@
 5月28,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/%E5%9B%BD%E5%86%85%E5%9C%B0%E6%96%B9%E5%8F%B0202005.m3u
 海外,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/台湾香港海外202005.m3u
 轮播,https://raw.staticdn.net/wudongdefeng/Tvlist-awesome-m3u-m3u8/master/m3u/轮播_爱奇艺CIBN华数NewTV虎牙战旗-202005.m3u
+so,https://raw.staticdn.net/s-veido/so/b0880137b815fac31289f67b1959bb7bfd64933c/1203.m3u
 #
