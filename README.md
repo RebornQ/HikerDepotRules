@@ -5,17 +5,17 @@
 （其实顺手修复了一下合并脚本第一个JSON对象会重复出现的问题）
 
 # 仓库规则（README也抄了🙈️）
-[manifest.json](https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json) 是合并后的规则，链接：
+[manifest.json](https://raw.githubusercontent.com/RebornQ/HikerDepotRules/master/manifest.json) 是合并后的规则，链接：
 
-`https://raw.githubusercontent.com/RebornQ/HikerRules/master/manifest.json`
+`https://raw.githubusercontent.com/RebornQ/HikerDepotRules/master/manifest.json`
 
-网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest.json from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json)，链接：
+网络问题可以使用[jsdelivr cdn](https://www.jsdelivr.com/?docs=gh)，即[manifest.json from jsdelivr](https://cdn.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json)，链接：
 
-`https://cdn.jsdelivr.net/gh/RebornQ/HikerRules/manifest.json`
+`https://cdn.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json`
 
 或
 
-`https://raw.staticdn.net/RebornQ/HikerRules/master/manifest.json`
+`https://raw.staticdn.net/RebornQ/HikerDepotRules/master/manifest.json`
 
 > jsdelivr 加 @latest 这种方法并不能拿到最新的内容，它是根据url缓存的。具体说明的链接在这里 [利用jsDelivr白嫖全球超高速静态资源访问服务！](https://www.bilibili.com/read/cv4297993/)
 
@@ -36,7 +36,7 @@
 
 ## 进阶
 ### 分类仓库开发者使用说明
-大家可以先看看我的模板目录结构：[https://github.com/RebornQ/HikerRules/tree/master/classes/noSniffer](https://github.com/RebornQ/HikerRules/tree/master/classes/noSniffer)
+大家可以先看看我的模板目录结构：[https://github.com/RebornQ/HikerDepotRules/tree/master/classes/noSniffer](https://github.com/RebornQ/HikerDepotRules/tree/master/classes/noSniffer)
 
 文件说明与初步使用的一样，同样自己删除我的规则。
 
