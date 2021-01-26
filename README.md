@@ -83,3 +83,9 @@
    > ```
 
 完成这些配置之后，在分类中添加 "{规则名}.json" 和 "notice.json" 通知文件开始填自己的规则吧，**一个JSON文件只能一个规则噢**~
+
+### 强制刷新 JsDeliver CDN 缓存
+
+访问该链接 [https://purge.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json](https://purge.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json) 即可刷新，自行替换用户名、仓库以及文件名
+
+> 如果你等不及，那就可以考虑一下😂️
