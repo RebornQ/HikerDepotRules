@@ -61,9 +61,9 @@ jobs:
       if: env.dst_key && env.dst_token && env.gitee_user
       with:
         src: github/${{ github.repository_owner }}
-        dst: gitee/env.gitee_user
-        dst_key: env.dst_key
-        dst_token: env.dst_token
+        dst: gitee/${{ env.gitee_user }}
+        dst_key: ${{ env.dst_key }}
+        dst_token: ${{ env.dst_token }}
         static_list: ${{ github.event.repository.name }}
         force_update: true
         debug: true
