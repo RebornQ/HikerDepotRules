@@ -14,6 +14,11 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    env:
+      dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+      dst_token: ${{ secrets.GITEE_TOKEN }}
+      gitee_user: ${{ secrets.GITEE_USER }}
+
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -52,3 +57,18 @@ jobs:
       with:
         github_token: ${{ secrets.ACCESS_TOKEN }}
         branch: ${{ github.ref }}
+    - name: Mirror with force push (git push -f)
+      uses: Yikun/hub-mirror-action@master
+      if: env.dst_key && env.dst_token && env.gitee_user
+      with:
+        # 必选，需要同步的 Github 用户（源）
+        src: 'github/${{ github.repository_owner }}'
+        # 必选，需要同步到的 Gitee 用户（目的）
+        dst: 'gitee/${{ secrets.GITEE_USER }}'
+        # 必选，Gitee 公钥对应的私钥，https://gitee.com/profile/sshkeys
+        dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+        # 必选，Gitee 对应的用于创建仓库的 token，https://gitee.com/profile/personal_access_tokens
+        dst_token: ${{ secrets.GITEE_TOKEN }}
+        # 直接取当前项目的仓库名
+        static_list: ${{ github.event.repository.name }}
+        force_update: true
