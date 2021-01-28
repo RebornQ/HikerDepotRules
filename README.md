@@ -89,3 +89,11 @@
 访问该链接 [https://purge.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json](https://purge.jsdelivr.net/gh/RebornQ/HikerDepotRules/manifest.json) 即可刷新，自行替换用户名、仓库以及文件名
 
 > 如果你等不及，那就可以考虑一下😂️
+
+### 同步仓库到码云 gitee（可选）
+
+> 嫌 CDN 刷新慢的可以考虑这个方案，但是配置有点复杂
+
+有点懒，先看着这个链接的教程吧，要配置的东西是一样的😂️
+
+教程链接：[https://gyx8899.gitbook.io/blog/share/syncgithubtogitee](https://gyx8899.gitbook.io/blog/share/syncgithubtogitee)
